@@ -979,6 +979,79 @@ Se méfier des logiciels de nettoyage installés un jour
   Le modèle, l'âge, la ressource saturée, et les étapes de cette liste déjà faites.`
 }
   ]
+},
+{
+  id:"b-menage", cat:"Maison", time:"1 journée",
+  title:"Nettoyer un appartement avant de déménager",
+  desc:"Le ménage de sortie, dans l'ordre qui évite de tout refaire deux fois — et qui protège la caution.",
+  steps:`## Préparer la journée
+Ne nettoyer qu'une fois l'appartement complètement vide
+  Chaque meuble déplacé fait apparaître de la poussière. Nettoyer avant d'avoir tout sorti, c'est le faire deux fois.
+Relire l'état des lieux d'entrée avant de commencer
+  C'est le seul document qui compte à la sortie. Ce qui y est déjà noté n'est pas à ta charge : inutile de t'acharner dessus.
+Photographier chaque pièce vide avant de nettoyer
+  Des photos datées valent preuve si la caution tarde à revenir.
+Garder l'eau et l'électricité ouvertes jusqu'après l'état des lieux
+  Sans eau chaude ni aspirateur, la journée est perdue. Les résiliations se font après, pas avant.
+Rassembler le matériel avant de commencer
+  Dégraissant, vinaigre blanc, crème à récurer, éponges non abrasives, microfibres, raclette à vitres, brosse à dents usagée, gants, sacs poubelle, escabeau.
+Retenir l'ordre : du haut vers le bas, du fond vers la sortie
+  La poussière tombe. Plafonds, murs, meubles, puis sols en dernier — sinon tout est à refaire.
+## Cuisine, le poste qui coûte le plus cher
+Vider et débrancher le réfrigérateur pour le laisser dégivrer, portes ouvertes
+  À lancer en tout premier le matin : ça prend plusieurs heures. Mets une serviette au pied pour l'eau de fonte.
+Nettoyer les joints de porte du réfrigérateur avec la brosse à dents
+Poser le produit dans le four et le laisser agir
+  Le four est le poste le plus long. Pendant qu'il trempe, tu avances ailleurs.
+Sortir les grilles et la lèchefrite, les faire tremper dans l'eau très chaude
+Nettoyer la vitre du four, entre les deux parois si elle se démonte
+Dégraisser la hotte et son filtre métallique
+  Le filtre part au lave-vaisselle, ou trempe dans l'eau bouillante avec du liquide vaisselle et du bicarbonate.
+Dégraisser les plaques de cuisson, les manettes et leur pourtour
+Nettoyer l'intérieur du micro-ondes
+  Un bol d'eau avec du citron, deux minutes à pleine puissance : la vapeur décolle tout le reste.
+Nettoyer le filtre, les bras et le joint du lave-vaisselle
+Dégraisser les façades des meubles, poignées comprises
+Nettoyer le dessus des meubles hauts
+  C'est l'endroit que tout le monde oublie et que tout le monde vérifie.
+Détartrer l'évier, le mitigeur et la bonde
+Nettoyer la crédence et les joints derrière le plan de travail
+## Salle de bain et WC
+Détartrer la pomme de douche et la robinetterie
+  Un sac plastique rempli de vinaigre blanc, noué autour de la pomme de douche, une nuit entière.
+Traiter les joints noircis à la pâte de bicarbonate
+  Pâte épaisse, brosse à dents, laisser agir vingt minutes. Si le joint reste noir après ça, c'est de l'usure et pas de la saleté : ce n'est pas à ta charge.
+Détartrer les parois et la porte de douche
+Détartrer les WC, y compris sous le rebord et derrière la cuvette
+Nettoyer le miroir, le meuble vasque et le porte-serviettes
+Démonter et laver les bouches d'aération
+  Une bouche de VMC encrassée est systématiquement relevée à l'état des lieux.
+Vérifier que les évacuations s'écoulent sans refouler
+## Murs, fenêtres et sols
+Effacer les traces sur les murs, en testant d'abord dans un coin caché
+  L'éponge magique retire la trace mais peut aussi retirer la peinture mate. Un essai discret avant de frotter en plein milieu du salon.
+Reboucher les trous de chevilles et poncer une fois sec
+  Un pot d'enduit coûte quelques euros. Des trous non rebouchés se retiennent sur la caution bien plus cher que ça.
+Dépoussiérer les plinthes, interrupteurs, prises et poignées de porte
+Laver les vitres des deux côtés, puis les rails et les volets
+  Par temps couvert plutôt qu'en plein soleil : au soleil, le produit sèche avant d'être essuyé et laisse des traces.
+Nettoyer les radiateurs, y compris entre les lames et derrière
+Aspirer partout, y compris dans les placards vides et sous les fenêtres
+Laver les sols en commençant par le fond du logement et en finissant à la porte d'entrée
+## Dépendances et remise des clés
+Nettoyer la cave, le garage, le balcon et la terrasse
+  Ils font partie du bail et ils sont vérifiés, même quand on les oublie.
+Sortir tous les encombrants au bon endroit
+  Un meuble laissé sur le palier ou dans la cave revient sur la facture d'enlèvement.
+Vider entièrement les poubelles, la boîte aux lettres et l'étiquette du nom
+Remplacer les ampoules grillées
+  Un détail à trois euros, presque toujours noté quand il manque.
+Relever les compteurs d'eau, de gaz et d'électricité, et les photographier
+Rassembler toutes les clés, badges et télécommandes
+  Un badge d'immeuble manquant se facture souvent plus cher qu'une journée de ménage.
+Refaire un tour pièce par pièce, l'état des lieux d'entrée à la main
+Photographier chaque pièce propre avant de rendre les clés
+  Mêmes angles que les photos du début. C'est la comparaison qui parle.`
 }
 ];
 
@@ -1087,7 +1160,7 @@ function rich(s){
 }
 function gaugeHTML(doneCount, total, currentIndex){
   if(total === 0) return '<div class="gauge"></div>';
-  if(total > 40){   /* au-delà, les segments deviennent illisibles : barre continue */
+  if(total > 60){   /* au-delà, les segments deviennent illisibles : barre continue */
     const pct = Math.round(doneCount / total * 100);
     return '<div class="gauge bar"><i style="width:' + pct + '%"></i></div>';
   }
