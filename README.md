@@ -40,6 +40,24 @@ git init
 
 Le texte entre `backticks` s'affiche en code, et les adresses web deviennent des liens.
 
+## Replier les phases
+
+L'en-tête de chaque phase est un bouton : un clic replie ou déplie ses étapes.
+Le compteur (`4/6`) reste affiché même repliée, et passe au vert quand la phase est
+finie. Le bouton **Tout replier** à côté des étiquettes agit sur toutes les phases.
+
+Deux comportements automatiques, pour que le repli serve à quelque chose sans qu'on
+ait à s'en occuper :
+
+- À l'ouverture d'une fiche, **les phases entièrement cochées arrivent repliées**. Ce
+  qui reste à faire est ce qu'on voit. Une fois dans la fiche, plus rien ne se replie
+  tout seul : les plis sont à toi.
+- Si l'étape en cours se retrouve dans une phase repliée, elle **se déplie** : la suite
+  du travail n'est jamais cachée.
+
+Les plis ne sont pas enregistrés. En quittant la fiche puis en revenant, ils se
+recalculent à partir de ce qui est fait. **Tout décocher** redéplie tout.
+
 ## Les tutos à plusieurs versions
 
 Un tuto fourni peut proposer plusieurs versions du même contenu — « Dépanner un

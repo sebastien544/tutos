@@ -42,6 +42,9 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
+/* Une règle d'auteur comme .step{display:flex} bat le display:none du
+   navigateur : sans ce !important, l'attribut hidden ne cacherait rien. */
+[hidden]{display:none !important}
 html{-webkit-text-size-adjust:100%}
 body{
   font-family:var(--font-body);
@@ -214,17 +217,32 @@ button{cursor:pointer;background:none;border:none;touch-action:manipulation;-web
 
 /* ---------- Étapes ---------- */
 .steps{list-style:none}
-.phase{
-  display:flex;align-items:baseline;gap:12px;
-  margin:26px 0 10px;padding-top:4px;
-}
+.phase{margin:26px 0 10px;padding-top:4px}
 .phase:first-child{margin-top:0}
-.phase h3{
+.phase h3{margin:0}
+.phase-head{
+  display:flex;align-items:baseline;gap:12px;width:100%;
+  text-align:left;padding:6px 4px;border-radius:6px;
+  transition:background .15s;
+}
+.phase-head:hover{background:rgba(19,32,25,.05)}
+.phase .pnum{font-family:var(--font-mono);font-size:11px;color:var(--amber);letter-spacing:.1em;flex:none}
+.phase-title{
   font-family:var(--font-display);font-weight:700;font-stretch:88%;
   font-size:13px;letter-spacing:.1em;text-transform:uppercase;
 }
-.phase .pnum{font-family:var(--font-mono);font-size:11px;color:var(--amber);letter-spacing:.1em}
-.phase::after{content:"";flex:1;height:1px;background:var(--rule);align-self:center}
+.phase .rule{flex:1;height:1px;background:var(--rule);align-self:center;min-width:12px}
+.phase-count{
+  font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);flex:none;
+}
+.phase-count.done{color:var(--go)}
+.phase .chev{
+  flex:none;width:11px;height:11px;align-self:center;
+  transition:transform .18s;
+}
+.phase .chev path{stroke:var(--ink-soft);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.phase.folded .chev{transform:rotate(-90deg)}
+.phase.folded{margin-bottom:0}
 
 .step{
   position:relative;
@@ -1812,6 +1830,44 @@ function renderList(){
    =================================================================== */
 let openId = null;
 let openVariant = null;
+let folded = new Set();   /* numéros des phases repliées, pour la checklist ouverte */
+let foldKey = null;       /* la checklist à laquelle ce repli correspond */
+
+/* Rattache chaque étape à sa phase et compte l'avancement de chacune.
+   Les étapes écrites avant la première phase portent le numéro 0 : elles
+   n'ont pas d'en-tête, donc elles ne se replient jamais. */
+function phaseStats(s){
+  const stats = {};
+  let cur = 0;
+  for(const it of s.items){
+    if(it.type === "phase"){ cur = it.index; stats[cur] = { total:0, done:0 }; continue; }
+    it.phase = cur;
+    if(stats[cur]){
+      stats[cur].total++;
+      if(s.done[it.key]) stats[cur].done++;
+    }
+  }
+  return stats;
+}
+
+function updateFoldButton(){
+  const b = $('#tutoMeta [data-act="foldall"]');
+  if(!b) return;
+  const all = document.querySelectorAll("#tutoSteps .phase").length;
+  b.textContent = folded.size >= all ? "Tout déplier" : "Tout replier";
+}
+
+function setFold(n, on){
+  if(on) folded.add(n); else folded.delete(n);
+  const li = document.querySelector('#tutoSteps .phase[data-phase="' + n + '"]');
+  if(li){
+    li.classList.toggle("folded", on);
+    li.querySelector(".phase-head").setAttribute("aria-expanded", String(!on));
+  }
+  document.querySelectorAll('#tutoSteps .step[data-phase="' + n + '"]')
+    .forEach(el => { el.hidden = on; });
+  updateFoldButton();
+}
 
 function renderTuto(id, vid){
   const t = getTuto(id);
@@ -1836,22 +1892,44 @@ function renderTuto(id, vid){
     : "";
   $("#tutoVariants").hidden = !vs;
 
+  const stats = phaseStats(s);
+  const hasPhases = Object.keys(stats).length > 0;
+
+  /* Au premier affichage d'une checklist, les phases déjà bouclées arrivent
+     repliées : ce qui reste à faire est ce qu'on voit. */
+  if(foldKey !== s.pid){
+    foldKey = s.pid;
+    folded = new Set(Object.keys(stats).map(Number)
+      .filter(n => stats[n].total > 0 && stats[n].done === stats[n].total));
+  }
+
   $("#tutoMeta").innerHTML =
     (t.cat ? '<span class="tag">' + esc(t.cat) + "</span>" : "") +
     ((s.variant && s.variant.time) || t.time
       ? '<span class="tag">' + esc((s.variant && s.variant.time) || t.time) + "</span>" : "") +
-    '<span class="tag">' + s.total + " étape" + (s.total > 1 ? "s" : "") + "</span>";
+    '<span class="tag">' + s.total + " étape" + (s.total > 1 ? "s" : "") + "</span>" +
+    (hasPhases ? '<button class="btn btn-sm btn-ghost" data-act="foldall"></button>' : "");
 
   let html = "";
   for(const it of s.items){
     if(it.type === "phase"){
-      html += '<li class="phase"><span class="pnum">Phase ' + String(it.index).padStart(2,"0") + "</span>" +
-              "<h3>" + esc(it.text) + "</h3></li>";
+      const st = stats[it.index] || { total:0, done:0 };
+      const full = st.total > 0 && st.done === st.total;
+      const isFolded = folded.has(it.index);
+      html += '<li class="phase' + (isFolded ? " folded" : "") + '" data-phase="' + it.index + '">' +
+        '<h3><button class="phase-head" aria-expanded="' + !isFolded + '">' +
+          '<span class="pnum">Phase ' + String(it.index).padStart(2,"0") + "</span>" +
+          '<span class="phase-title">' + esc(it.text) + "</span>" +
+          '<span class="rule"></span>' +
+          '<span class="phase-count' + (full ? " done" : "") + '">' + st.done + "/" + st.total + "</span>" +
+          '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5l4 4 4-4"/></svg>' +
+        "</button></h3></li>";
       continue;
     }
     const checked = !!s.done[it.key];
     const isNow = !checked && s.current && s.current.key === it.key;
-    html += '<li class="step' + (checked ? " checked" : "") + (isNow ? " now" : "") + '" data-key="' + it.key + '">' +
+    html += '<li class="step' + (checked ? " checked" : "") + (isNow ? " now" : "") + '" data-key="' + it.key + '"' +
+      ' data-phase="' + it.phase + '"' + (folded.has(it.phase) ? " hidden" : "") + ">" +
       '<button class="toggle" role="checkbox" aria-checked="' + checked + '" aria-label="Étape ' + it.index + ' : ' + esc(it.text) + '">' +
         '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>' +
       "</button>" +
@@ -1865,6 +1943,7 @@ function renderTuto(id, vid){
     "</li>";
   }
   $("#tutoSteps").innerHTML = html;
+  updateFoldButton();
 
   const complete = s.total > 0 && s.doneCount === s.total;
   $("#tutoFinish").innerHTML = complete
@@ -1904,6 +1983,16 @@ function refreshTutoChrome(){
 
   document.querySelectorAll("#tutoSteps .step").forEach(li => {
     li.classList.toggle("now", !!(s.current && s.current.key === li.dataset.key));
+  });
+
+  /* Le compteur de chaque phase suit les coches, même quand la phase est repliée. */
+  const stats = phaseStats(s);
+  document.querySelectorAll("#tutoSteps .phase").forEach(li => {
+    const st = stats[li.dataset.phase];
+    if(!st) return;
+    const el = li.querySelector(".phase-count");
+    el.textContent = st.done + "/" + st.total;
+    el.classList.toggle("done", st.total > 0 && st.done === st.total);
   });
 
   const complete = s.total > 0 && s.doneCount === s.total;
@@ -2043,6 +2132,10 @@ function route(){
   const mTuto = h.match(/^#\/t\/([^\/]+)(?:\/([^\/]+))?$/);
   const mEdit = h.match(/^#\/edit\/(.+)$/);
 
+  /* En quittant une fiche, on oublie les plis : au retour, les phases
+     terminées se replient à nouveau d'elles-mêmes. */
+  if(!mTuto) foldKey = null;
+
   if(mTuto){
     show("viewTuto");
     renderTuto(decodeURIComponent(mTuto[1]), mTuto[2] ? decodeURIComponent(mTuto[2]) : null);
@@ -2117,6 +2210,14 @@ $("#tutoVariants").addEventListener("click", e => {
   go("#/t/" + encodeURIComponent(openId) + "/" + encodeURIComponent(b.dataset.variant));
 });
 
+/* Replier ou déplier une phase */
+$("#tutoSteps").addEventListener("click", e => {
+  const head = e.target.closest(".phase-head");
+  if(!head) return;
+  const n = Number(head.closest(".phase").dataset.phase);
+  setFold(n, !folded.has(n));
+});
+
 /* Cocher une étape */
 $("#tutoSteps").addEventListener("click", e => {
   const copy = e.target.closest(".copy");
@@ -2146,10 +2247,13 @@ $("#tutoSteps").addEventListener("click", e => {
   if(willCheck) scrollToNext();
 });
 
-/* Après une coche, amener l'étape suivante sous les yeux si elle est hors champ. */
+/* Après une coche, amener l'étape suivante sous les yeux si elle est hors champ.
+   Si elle se trouve dans une phase repliée, on déplie : la suite du travail ne
+   doit jamais rester cachée. */
 function scrollToNext(){
   const next = document.querySelector("#tutoSteps .step.now");
   if(!next) return;
+  if(next.hidden) setFold(Number(next.dataset.phase), false);
   const r = next.getBoundingClientRect();
   if(r.bottom > window.innerHeight - 20 || r.top < 90){
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2162,12 +2266,18 @@ document.addEventListener("click", e => {
   const b = e.target.closest("[data-act]");
   if(!b || !openId) return;
   const act = b.dataset.act;
-  if(act === "reset"){
+  if(act === "foldall"){
+    const all = [...document.querySelectorAll("#tutoSteps .phase")]
+      .map(li => Number(li.dataset.phase));
+    const fold = folded.size < all.length;
+    all.forEach(n => setFold(n, fold));
+  }else if(act === "reset"){
     const t = getTuto(openId);
     const s = stateOf(t, openVariant);
     const quoi = s.variant ? t.title + " » en version " + s.variant.label : t.title + " »";
     if(!confirm("Décocher toutes les étapes de « " + quoi + " ?")) return;
     resetProgress(s.pid);
+    foldKey = null;                    /* on repart d'une fiche entièrement dépliée */
     renderTuto(openId, openVariant);
     window.scrollTo({ top:0, behavior:"smooth" });
     toast("Checklist remise à zéro.");
