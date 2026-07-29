@@ -1115,6 +1115,174 @@ Consulter en urgence si une traînée rouge remonte vers le poignet, ou en cas d
 Laisser la croûte tomber toute seule
 Protéger la cicatrice du soleil pendant plusieurs mois
   Une cicatrice jeune exposée au soleil brunit, et cette teinte-là reste.`
+},
+{
+  id:"b-iso", cat:"Fichiers", time:"5 min",
+  title:"Monter une image ISO",
+  desc:"Ouvrir le contenu d'un fichier .iso comme un disque, sans rien graver. Une version par système.",
+  variants:[
+{
+  id:"linux", label:"Linux", time:"5 min",
+  steps:`## Savoir ce qu'on fait
+Vérifier que monter est bien ce dont tu as besoin
+  Monter fait apparaître le contenu de l'image comme un disque, en lecture seule, sans rien copier. Ce n'est ni graver un DVD, ni fabriquer une clé USB qui démarre : ces deux-là sont des opérations différentes, en bas de cette liste.
+Vérifier que le fichier est complet avant de s'en servir
+\`\`\`
+sha256sum image.iso
+\`\`\`
+  Compare avec la somme publiée par le site de téléchargement. Un seul caractère différent veut dire fichier abîmé : retélécharge, ne monte pas.
+Repérer où se trouve le fichier
+  Le chemin complet évite les erreurs. Dans le gestionnaire de fichiers, Ctrl+L affiche la barre d'adresse.
+## Monter, au choix
+Le plus simple : clic droit sur le fichier, Ouvrir avec, Monteur d'image disque
+  L'image apparaît dans la barre latérale du gestionnaire de fichiers, comme une clé USB branchée.
+En ligne de commande sans droits administrateur
+\`\`\`
+udisksctl loop-setup -r -f image.iso
+\`\`\`
+  L'option -r monte en lecture seule. La commande répond avec un nom de périphérique du genre /dev/loop0 : garde-le pour le démontage.
+En ligne de commande à l'ancienne, avec un point de montage choisi
+\`\`\`
+sudo mkdir -p /mnt/iso
+sudo mount -o loop,ro image.iso /mnt/iso
+\`\`\`
+Vérifier que le montage a pris
+\`\`\`
+findmnt /mnt/iso
+ls /mnt/iso
+\`\`\`
+## Se servir du contenu
+Ouvrir le disque virtuel et copier ce dont tu as besoin
+Ne pas chercher à écrire dedans
+  Une image montée est en lecture seule par nature. Pour modifier le contenu, il faut extraire ailleurs, changer, puis reconstruire une image.
+Extraire tout le contenu sans monter, si c'est tout ce que tu veux
+\`\`\`
+7z x image.iso -o./contenu
+\`\`\`
+  Pratique quand tu n'as pas les droits d'administrateur, ou pour aller chercher un seul fichier.
+## Démonter proprement
+Démonter selon la méthode utilisée
+\`\`\`
+sudo umount /mnt/iso
+udisksctl loop-delete -b /dev/loop0
+\`\`\`
+Si le système répond que la cible est occupée, trouver qui la retient
+\`\`\`
+lsof +f -- /mnt/iso
+\`\`\`
+  Un terminal resté ouvert dans le dossier suffit à bloquer le démontage.
+## Si ça ne marche pas
+Vérifier que le fichier est vraiment une image disque
+\`\`\`
+file image.iso
+\`\`\`
+  Une archive renommée en .iso ne se monte pas. Un fichier bin ou nrg non plus, il faut le convertir d'abord.
+Retélécharger si la somme de contrôle ne correspond pas
+Si le but est de démarrer l'ordinateur dessus, ne pas monter mais écrire l'image sur une clé
+  Ventoy ou le Créateur de disque de démarrage font ça sans risque. La commande dd fonctionne aussi mais efface le disque désigné sans aucun avertissement : vérifie deux fois le nom donné par lsblk avant de la lancer.`
+},
+{
+  id:"windows", label:"Windows", time:"5 min",
+  steps:`## Savoir ce qu'on fait
+Vérifier que monter est bien ce dont tu as besoin
+  Monter fait apparaître le contenu de l'image comme un lecteur, en lecture seule, sans rien copier. Ce n'est ni graver un DVD, ni fabriquer une clé USB qui démarre : ces deux-là sont des opérations différentes, en bas de cette liste.
+Vérifier que le fichier est complet avant de s'en servir
+\`\`\`
+certutil -hashfile image.iso SHA256
+\`\`\`
+  Compare avec la somme publiée par le site de téléchargement. Un seul caractère différent veut dire fichier abîmé : retélécharge, ne monte pas.
+Copier l'image sur le disque local si elle est sur un partage réseau
+  Windows refuse de monter depuis certains emplacements réseau, et échoue sans expliquer pourquoi.
+## Monter
+Faire un clic droit sur le fichier, puis Monter
+  C'est intégré depuis Windows 8, sans aucun logiciel à installer. Sous Windows 11, l'entrée peut être derrière « Afficher plus d'options ».
+Repérer la nouvelle lettre de lecteur dans l'Explorateur
+  Le lecteur apparaît dans Ce PC, avec l'icône d'un lecteur optique.
+Si Monter n'apparaît pas, c'est qu'un autre logiciel s'est emparé du .iso
+  WinRAR ou 7-Zip s'associent aux .iso à l'installation. Clic droit, Ouvrir avec, Explorateur Windows. Pour de bon : Paramètres, Applications, Applications par défaut, chercher .iso et choisir l'Explorateur.
+En PowerShell, si tu préfères
+\`\`\`
+Mount-DiskImage -ImagePath "C:\\Users\\moi\\Downloads\\image.iso"
+\`\`\`
+## Se servir du contenu
+Ouvrir le lecteur et copier ce dont tu as besoin
+Lancer l'installateur depuis le lecteur monté si c'est un logiciel
+Ne pas chercher à écrire dedans
+  Une image montée est en lecture seule par nature. Pour modifier le contenu, il faut extraire ailleurs, changer, puis reconstruire une image.
+## Démonter proprement
+Faire un clic droit sur le lecteur, puis Éjecter
+  Fermer la fenêtre ne démonte rien : le lecteur reste là tant qu'il n'est pas éjecté.
+Ou en PowerShell
+\`\`\`
+Dismount-DiskImage -ImagePath "C:\\Users\\moi\\Downloads\\image.iso"
+\`\`\`
+Redémarrer si un lecteur fantôme reste affiché
+  Un lecteur virtuel qui ne s'éjecte plus disparaît toujours au redémarrage.
+## Si ça ne marche pas
+Vérifier que le fichier n'est ni compressé ni chiffré à l'emplacement où il est
+  Windows ne monte pas une image posée dans un dossier compressé ou sur un volume chiffré par un outil tiers. Déplace-la sur le bureau et réessaie.
+Vérifier que c'est bien une image disque et pas une archive renommée
+Retélécharger si la somme de contrôle ne correspond pas
+Si le but est de démarrer l'ordinateur dessus, ne pas monter mais écrire l'image sur une clé
+  Rufus ou Ventoy font ça en quelques clics. Attention : l'opération efface entièrement la clé choisie.`
+},
+{
+  id:"mac", label:"macOS", time:"5 min",
+  steps:`## Savoir ce qu'on fait
+Vérifier que monter est bien ce dont tu as besoin
+  Monter fait apparaître le contenu de l'image comme un disque, en lecture seule, sans rien copier. Ce n'est ni graver un DVD, ni fabriquer une clé USB qui démarre : ces deux-là sont des opérations différentes, en bas de cette liste.
+Vérifier que le fichier est complet avant de s'en servir
+\`\`\`
+shasum -a 256 image.iso
+\`\`\`
+  Compare avec la somme publiée par le site de téléchargement. Un seul caractère différent veut dire fichier abîmé : retélécharge, ne monte pas.
+Repérer le fichier dans le Finder
+  Glisser un fichier dans la fenêtre du Terminal y colle son chemin complet, sans faute de frappe.
+## Monter
+Double-cliquer sur le fichier .iso
+  Le disque apparaît dans la barre latérale du Finder, et sur le bureau si tu as coché « Disques externes » dans les réglages du Finder.
+En Terminal, si le double-clic ne donne rien
+\`\`\`
+hdiutil attach image.iso
+\`\`\`
+  La commande affiche le point de montage, du genre /Volumes/NOM_DU_DISQUE.
+Vérifier ce qui est monté
+\`\`\`
+hdiutil info
+\`\`\`
+## Se servir du contenu
+Ouvrir le disque et copier ce dont tu as besoin
+Ne pas chercher à écrire dedans
+  Une image montée est en lecture seule par nature. Pour modifier le contenu, il faut extraire ailleurs, changer, puis reconstruire une image.
+Se méfier d'un installateur qui ne vient pas d'un éditeur connu
+  Une image téléchargée hors de l'App Store peut contenir n'importe quoi. macOS demandera confirmation : c'est le moment de lire ce qu'il dit, pas de cliquer vite.
+## Démonter proprement
+Éjecter le disque depuis le Finder
+  Le clic droit sur l'icône, puis Éjecter, ou la flèche dans la barre latérale.
+Ou en Terminal
+\`\`\`
+hdiutil detach /Volumes/NOM_DU_DISQUE
+\`\`\`
+Forcer si macOS répond que le disque est occupé
+\`\`\`
+hdiutil detach /Volumes/NOM_DU_DISQUE -force
+\`\`\`
+  À n'utiliser qu'après avoir fermé les applications qui lisent dedans.
+## Si ça ne marche pas
+Si macOS répond que l'image n'est pas reconnue, la convertir
+\`\`\`
+hdiutil convert image.iso -format UDRW -o image.img
+\`\`\`
+  macOS accepte mal certaines images hybrides prévues pour les PC. La conversion produit un fichier image.img.dmg qui, lui, se monte.
+Vérifier que c'est bien une image disque et pas une archive renommée
+\`\`\`
+file image.iso
+\`\`\`
+Retélécharger si la somme de contrôle ne correspond pas
+Si le but est de démarrer un ordinateur dessus, ne pas monter mais écrire l'image sur une clé
+  Balena Etcher le fait sans risque de se tromper de disque. L'opération efface entièrement la clé choisie.`
+}
+  ]
 }
 ];
 
