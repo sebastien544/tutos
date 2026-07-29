@@ -1283,6 +1283,188 @@ Si le but est de démarrer un ordinateur dessus, ne pas monter mais écrire l'im
   Balena Etcher le fait sans risque de se tromper de disque. L'opération efface entièrement la clé choisie.`
 }
   ]
+},
+{
+  id:"b-linux", cat:"Système", time:"1 h",
+  title:"Installer Linux",
+  desc:"De la clé USB au premier démarrage. Trois façons de s'y prendre, selon ce que tu veux garder.",
+  variants:[
+{
+  id:"complet", label:"Disque entier", time:"1 h",
+  steps:`## Choisir avant de commencer
+Choisir une distribution et s'y tenir pour un premier essai
+  Linux Mint ou Ubuntu. Ce sont celles dont la documentation en français est la plus fournie : ton problème a déjà été rencontré et résolu par quelqu'un.
+Vérifier que la machine suivra
+  4 Go de mémoire vive au minimum, 8 pour être à l'aise. 25 Go de disque au strict minimum, 50 pour ne pas y revenir.
+Chercher le modèle exact de la machine suivi du mot Linux
+  Les rares soucis matériels — wifi, pavé tactile, carte graphique — sont documentés machine par machine. Dix minutes de lecture évitent une soirée perdue.
+Accepter que tout le disque sera effacé
+  Cette version efface tout : Windows, les données, et la partition de restauration du constructeur. Pour garder Windows, c'est l'onglet À côté de Windows.
+## Sauvegarder, avant tout le reste
+Copier tous les documents personnels sur un disque externe
+Vérifier que la copie s'ouvre depuis une autre machine
+  Une sauvegarde jamais relue n'est pas une sauvegarde.
+Exporter les marque-pages, les mots de passe et les clés de licence
+Débrancher les autres disques si la machine en a plusieurs
+  C'est la façon la plus sûre de ne pas se tromper de disque au moment de valider.
+## Préparer la clé USB
+Télécharger l'image depuis le site officiel de la distribution, et de nulle part ailleurs
+Vérifier la somme de contrôle de l'image téléchargée
+\`\`\`
+sha256sum linuxmint.iso
+\`\`\`
+  À comparer avec la somme publiée sur la page de téléchargement. Une image abîmée donne une installation qui échoue au milieu, sans dire pourquoi.
+Écrire l'image sur une clé de 8 Go ou plus
+  Ventoy, balenaEtcher ou Rufus. La clé sera entièrement effacée.
+Ne pas confondre écrire l'image et copier le fichier
+  Glisser le .iso sur la clé ne produit rien de démarrable.
+## Démarrer sur la clé
+Entrer dans le menu de démarrage à l'allumage
+  F12, F9, F10, Échap ou Suppr selon la marque. Le message s'affiche une seconde à peine, au logo du constructeur.
+Choisir la clé dans son entrée UEFI
+Si l'installateur ne voit aucun disque, passer le contrôleur de RST à AHCI dans le BIOS
+  Réglage typique des portables Intel récents. Sans ce changement, aucun disque n'apparaît à l'étape du partitionnement.
+Choisir Essayer avant d'installer, pas Installer directement
+## Essayer avant de s'engager
+Vérifier le wifi, le son, l'écran et le pavé tactile dans la session d'essai
+  Ce qui ne fonctionne pas en session d'essai ne fonctionnera pas mieux une fois installé. C'est le moment de le découvrir, pas après.
+Brancher la machine sur le secteur
+  Une installation interrompue par une batterie vide laisse un disque à moitié écrit.
+## Installer
+Lancer l'installateur depuis le bureau de la session d'essai
+Choisir la langue, la disposition du clavier et le fuseau horaire
+  Teste les accents et l'arobase dans le champ prévu : un clavier mal choisi se paie tous les jours.
+Cocher l'installation des codecs et des pilotes propriétaires
+Choisir Effacer le disque et installer Linux
+Relire le nom et la taille du disque désigné avant de valider
+  Dernier moment pour revenir en arrière. Après, il n'y a plus rien à récupérer.
+Choisir le chiffrement du disque si la machine sort de chez toi
+  Sans la phrase de passe, les données sont perdues pour de bon, sans exception ni recours. Note-la ailleurs que sur cette machine.
+Créer l'utilisateur avec un vrai mot de passe
+  C'est lui qui sera demandé pour toute installation de logiciel. Un mot de passe à trois lettres devient vite pénible et reste peu sûr.
+Laisser l'installation aller au bout sans couper
+Retirer la clé quand c'est demandé, puis redémarrer
+## Les premiers réglages
+Installer les mises à jour en attente
+Installer le pilote de la carte graphique si le gestionnaire de pilotes en propose un
+Vérifier la mise en veille, la batterie et le son
+Mettre en place une sauvegarde et créer un premier instantané système
+  Avant de commencer à expérimenter, pas après.
+## Si ça coince
+Écran noir au démarrage : relancer en ajoutant nomodeset aux options
+  Au menu de démarrage, touche E, ajoute nomodeset à la ligne linux, puis F10. C'est presque toujours la carte graphique.
+Pas de wifi : brancher un câble le temps d'ouvrir le gestionnaire de pilotes
+Rien ne démarre après l'installation : vérifier l'ordre de démarrage dans l'UEFI
+  Certains BIOS remettent le disque interne derrière l'entrée Windows disparue. L'entrée à choisir s'appelle ubuntu ou le nom de la distribution.`
+},
+{
+  id:"double", label:"À côté de Windows", time:"1 h 30",
+  steps:`## Avant de toucher au disque
+Sauvegarder Windows entièrement sur un disque externe
+  Le double démarrage se passe bien dans l'immense majorité des cas. C'est pour les autres que la sauvegarde existe.
+Vérifier qu'il reste au moins 50 Go de libre sur le disque
+  En dessous de 40, l'installation tient mais devient vite étouffante. Fais le ménage dans Windows avant, pas après.
+Noter la clé de récupération BitLocker, ou suspendre le chiffrement
+  Redimensionner un disque chiffré déclenche la demande de clé au redémarrage suivant. Sans elle, Windows est inaccessible. Elle se retrouve dans le compte Microsoft.
+Désactiver le démarrage rapide de Windows
+  Panneau de configuration, Options d'alimentation, Choisir l'action des boutons, puis décocher Activer le démarrage rapide. Sans ça, Windows laisse le disque dans un état que Linux refuse d'écrire.
+Faire les mises à jour Windows maintenant plutôt qu'après
+Chercher le modèle de la machine suivi du mot Linux
+  Les soucis de wifi ou de carte graphique sont documentés machine par machine.
+## Faire de la place, depuis Windows
+Ouvrir la Gestion des disques de Windows
+  Clic droit sur le menu Démarrer, Gestion des disques.
+Réduire la partition Windows depuis Windows, pas depuis l'installateur Linux
+  Windows sait rétrécir son propre système de fichiers proprement. C'est plus sûr que de le faire faire par un autre.
+Laisser l'espace libéré non alloué
+  Ne crée pas de partition dedans : l'installateur Linux a besoin de le voir comme espace libre.
+Vérifier qu'il ne reste pas quatre partitions primaires sur un vieux disque MBR
+  Sur un disque en MBR, la cinquième partition est impossible. Les machines récentes sont en GPT et ne connaissent pas cette limite.
+## Préparer la clé et démarrer dessus
+Télécharger l'image officielle et vérifier sa somme de contrôle
+\`\`\`
+certutil -hashfile linuxmint.iso SHA256
+\`\`\`
+Écrire l'image sur une clé de 8 Go avec Rufus, Ventoy ou balenaEtcher
+  La clé sera entièrement effacée. Choisis le mode UEFI si l'outil pose la question.
+Entrer dans le menu de démarrage à l'allumage et choisir la clé en UEFI
+  F12, F9, F10, Échap ou Suppr selon la marque. Choisis l'entrée qui commence par UEFI : installer en mode ancien à côté d'un Windows en UEFI donne deux systèmes qui s'ignorent.
+Laisser le démarrage sécurisé activé
+  Mint, Ubuntu et Fedora le gèrent depuis longtemps. Le désactiver n'apporte rien et complique le retour en arrière.
+Si l'installateur ne voit aucun disque, passer le contrôleur de RST à AHCI dans le BIOS
+  Sur les portables Intel, ce réglage empêche Linux de voir le disque. Windows peut refuser de redémarrer après le changement : cherche « démarrage en mode sans échec AHCI » avant de le faire.
+## Installer à côté
+Vérifier le wifi, le son et l'écran dans la session d'essai avant d'installer
+Brancher la machine sur le secteur
+Choisir Installer à côté de Windows Boot Manager
+  Si cette option apparaît, c'est le chemin le plus sûr : l'installateur utilise l'espace libéré et ne touche pas au reste.
+Régler la taille donnée à Linux avec le curseur
+Si l'option n'apparaît pas, passer en installation manuelle avec prudence
+  Créer une partition ext4 montée sur / dans l'espace libre, et surtout réutiliser la partition EFI existante sans la formater. La formater rend Windows indémarrable.
+Relire le résumé des changements avant de valider
+  L'installateur liste ce qu'il va écrire. C'est le dernier moment pour dire non.
+Créer l'utilisateur, puis laisser l'installation aller au bout
+Redémarrer et vérifier que le menu propose les deux systèmes
+## Après l'installation
+Démarrer une fois sur chaque système pour vérifier que les deux répondent
+Corriger le décalage d'horloge si Windows affiche une mauvaise heure
+\`\`\`
+sudo timedatectl set-local-rtc 1 --adjust-system-clock
+\`\`\`
+  Les deux systèmes ne lisent pas l'horloge matérielle de la même façon. Cette commande aligne Linux sur la convention de Windows.
+Si Windows n'apparaît pas dans le menu de démarrage, régénérer la liste
+\`\`\`
+sudo os-prober
+sudo update-grub
+\`\`\`
+Refaire ce contrôle après chaque grosse mise à jour de Windows
+  Windows remet parfois son propre gestionnaire en premier. L'ordre se rétablit dans l'UEFI, ou avec la commande ci-dessus.
+Mettre en place une sauvegarde côté Linux`
+},
+{
+  id:"essai", label:"Machine virtuelle", time:"30 min",
+  steps:`## Pourquoi commencer par là
+Comprendre ce que ça change
+  Linux tourne dans une fenêtre, à l'intérieur du système actuel. Rien n'est effacé, rien n'est risqué, et la machine virtuelle se jette d'un clic si l'essai ne plaît pas.
+Accepter les limites de l'exercice
+  Les jeux, la 3D et l'autonomie ne seront pas représentatifs. Pour juger de la vitesse réelle, il faudra installer pour de vrai.
+Vérifier que la virtualisation est activée dans le BIOS
+  Elle s'appelle VT-x, Intel Virtualization Technology ou AMD-V. Désactivée, elle limite la machine virtuelle à un système 32 bits et à une lenteur décourageante.
+## Préparer
+Installer VirtualBox, ou Machines à boîtes sur un Linux, ou UTM sur un Mac Apple Silicon
+Télécharger l'image officielle de la distribution
+Vérifier la somme de contrôle de l'image
+Prévoir la place sur le disque hôte
+  Compte 40 Go pour le disque virtuel, même s'il ne se remplira que progressivement.
+## Créer la machine virtuelle
+Créer une machine et lui donner le nom de la distribution
+Lui attribuer 4 Go de mémoire vive, sans dépasser la moitié de celle de la machine
+  Au-delà, c'est le système hôte qui rame, et l'essai devient injuste.
+Lui attribuer 2 processeurs
+Créer un disque virtuel de 40 Go, alloué dynamiquement
+  Il ne prendra sur le disque réel que la place réellement utilisée.
+Activer l'EFI dans les réglages système de la machine
+  Cela reproduit le démarrage des machines d'aujourd'hui, et évite des surprises au moment de passer à une vraie installation.
+Attacher le fichier ISO au lecteur optique virtuel
+## Installer
+Démarrer la machine et choisir Essayer ou Installer
+Choisir la langue, le clavier et le fuseau
+Choisir Effacer le disque et installer, sans hésiter
+  Le disque en question est le disque virtuel de 40 Go. Rien de réel n'est touché.
+Créer l'utilisateur, puis laisser l'installation se terminer
+Retirer l'image ISO du lecteur virtuel avant de redémarrer
+  Sinon la machine redémarre sur l'installateur en boucle.
+## Rendre l'essai agréable
+Installer les additions invité
+  Elles apportent le plein écran, le presse-papiers partagé et le redimensionnement de la fenêtre. Sans elles, l'essai donne une mauvaise image de Linux.
+Activer un dossier partagé avec le système hôte
+Prendre un instantané de la machine une fois tout réglé
+  Un instantané permet de tout casser pour apprendre, puis de revenir en arrière en dix secondes.
+Passer une vraie semaine dessus avant de décider
+  Installer les logiciels dont tu te sers vraiment, et faire ton travail habituel dedans. C'est le seul test qui répond à la question.
+Quand la décision est prise, passer à l'onglet Disque entier ou À côté de Windows`
+}
+  ]
 }
 ];
 
