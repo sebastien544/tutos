@@ -40,6 +40,24 @@ git init
 
 Le texte entre `backticks` s'affiche en code, et les adresses web deviennent des liens.
 
+## Les tutos à plusieurs versions
+
+Un tuto fourni peut proposer plusieurs versions du même contenu — « Dépanner un
+ordinateur qui rame » en a trois : Linux, Windows, macOS. Elles s'échangent par les
+onglets sous la description.
+
+- Chaque version a **sa propre progression** : cocher des étapes côté Linux ne touche
+  pas à la version Windows. En stockage, la clé est `idDuTuto#idDeLaVersion`.
+- L'onglet ouvert par défaut est celui du système sur lequel tu lis la page, puis celui
+  que tu as regardé en dernier.
+- L'adresse suit l'onglet (`#/t/b-lent/windows`), donc une version précise se met en
+  favori ou se partage telle quelle.
+- Un tuto ressort dans le filtre **En cours** dès qu'une seule de ses versions l'est, et
+  la carte affiche alors cette version-là.
+
+Ça ne concerne que les tutos fournis : l'éditeur crée des tutos à version unique, et
+**Dupliquer pour modifier** copie la version affichée à ce moment-là.
+
 ## Bon à savoir
 
 La case cochée est rattachée au **texte** de l'étape, pas à sa position. Réordonner

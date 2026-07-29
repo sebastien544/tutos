@@ -207,6 +207,11 @@ button{cursor:pointer;background:none;border:none;touch-action:manipulation;-web
 }
 .sheet-desc{color:var(--ink-soft);font-size:15px;margin-bottom:20px;max-width:62ch}
 
+/* Versions d'un même tuto : le choix se fait ici, les étapes changent en dessous. */
+.variants{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 24px}
+.variants .segmented button{padding:10px 18px;font-size:12.5px}
+.variants .segmented button[aria-selected="true"]{background:var(--ink);color:var(--card)}
+
 /* ---------- Étapes ---------- */
 .steps{list-style:none}
 .phase{
@@ -422,6 +427,7 @@ button{cursor:pointer;background:none;border:none;touch-action:manipulation;-web
     </div>
     <div class="sheet-meta" id="tutoMeta"></div>
     <p class="sheet-desc" id="tutoDesc"></p>
+    <div class="variants" id="tutoVariants" hidden></div>
     <ol class="steps" id="tutoSteps"></ol>
     <div id="tutoFinish"></div>
     <div class="sheet-foot" id="tutoActions"></div>
@@ -500,8 +506,11 @@ function save(key, value){
   catch(e){ toast("Impossible d'enregistrer : mémoire du navigateur pleine."); }
 }
 
-let custom   = load(LS_CUSTOM, []);
-let progress = load(LS_PROG, {});   // { tutoId: { done:{key:1}, finishedAt:"2026-07-29" } }
+const LS_VARIANT = "tutos.v1.variant";
+
+let custom      = load(LS_CUSTOM, []);
+let progress    = load(LS_PROG, {});      // { idProgression: { done:{clé:1}, finishedAt:"2026-07-29" } }
+let lastVariant = load(LS_VARIANT, {});   // { idDuTuto: idDeLaVersion } — la version regardée en dernier
 
 /* ===================================================================
    Analyse du texte des étapes
@@ -711,63 +720,265 @@ Noter la date de ce tour dans le calendrier pour le mois prochain`
 {
   id:"b-lent", cat:"Entretien", time:"45 min",
   title:"Dépanner un ordinateur qui rame",
-  desc:"Une méthode qui vaut pour Windows, macOS et Linux : trouver quelle ressource sature, puis ne traiter que celle-là.",
+  desc:"Trouver quelle ressource sature, puis ne traiter que celle-là. Une version par système.",
+  variants:[
+{
+  id:"linux", label:"Linux", time:"45 min",
   steps:`## Constater avant de toucher à quoi que ce soit
 Noter quand ça rame exactement
   Au démarrage, dans le navigateur, tout le temps, ou après quelques heures allumé : ce sont quatre pannes différentes.
 Noter ce qui a changé juste avant que ça commence
   Un logiciel installé, une mise à jour, un disque qui s'est rempli. La cause est presque toujours le dernier changement.
-Éteindre et rallumer pour de bon
-  Pas la mise en veille : un vrai redémarrage. Beaucoup de lenteurs disparaissent là et ne reviennent pas avant des semaines.
-Ouvrir le moniteur d'activité et le regarder pendant deux minutes
-  Windows : Gestionnaire des tâches, par Ctrl+Maj+Échap. macOS : Moniteur d'activité. Linux : Moniteur système.
+Redémarrer et regarder si le problème revient tout de suite
+  \`uptime\` dit depuis combien de temps la machine tourne. Au-delà de quelques semaines, un redémarrage règle beaucoup de choses.
+Ouvrir le Moniteur système et rester deux minutes sur l'onglet Ressources
+  Processeur à fond, mémoire pleine ou disque qui gratte : le dépannage n'est pas le même.
 Décider laquelle des quatre ressources sature : processeur, mémoire, disque ou réseau
-  C'est la seule question qui oriente tout le reste. Une seule des quatre est en cause dans la grande majorité des cas.
-## Suivre la ressource saturée
-Processeur à fond : trier la liste par processeur et regarder qui est en tête
-  Un programme seul à 90 % en permanence n'est pas normal, même s'il porte un nom rassurant.
-Mémoire pleine : trier par mémoire, fermer le plus gourmand, voir si la machine repart
-  Si tout ralentit dès qu'on ouvre quelques onglets, c'est la mémoire et pas le processeur.
-Disque à 100 % : trouver ce qui écrit en continu
-  Antivirus, indexation, synchronisation avec le nuage, sauvegarde. Normal pendant une heure après une grosse mise à jour, anormal pendant trois jours.
-Réseau saturé : couper la synchronisation en cours et voir si l'interface redevient fluide
-Rien de saturé mais tout est lent : passer directement à la partie matériel
+  C'est la seule question qui oriente tout le reste.
+## Trouver ce qui mange les ressources
+Installer htop, une fois pour toutes
+\`\`\`
+sudo apt install htop
+\`\`\`
+  Sur Fedora ou openSUSE, remplace \`apt install\` par \`dnf install\` ou \`zypper install\`.
+Classer les programmes par processeur
+  Lance \`htop\`, puis F6 et choisis PERCENT_CPU. Sans htop, \`top\` puis la touche Maj+P fait la même chose.
+Classer les programmes par mémoire
+\`\`\`
+ps aux --sort=-%mem | head -12
+\`\`\`
+Vérifier si la mémoire est saturée et si le swap travaille
+\`\`\`
+free -h
+swapon --show
+\`\`\`
+  Un swap occupé en permanence veut dire que la machine manque de mémoire vive. C'est la première cause des ralentissements par à-coups.
+Repérer ce qui écrit sur le disque en continu
+\`\`\`
+sudo iotop -o
+\`\`\`
+  Indexation, sauvegarde, synchronisation avec le nuage : normal pendant une heure, anormal pendant trois jours.
+Fermer le programme coupable et vérifier si la machine repart
+  S'il revient tout seul à chaque démarrage, c'est le moment de le désinstaller.
 ## Rendre de la place au disque
-Vérifier l'espace libre du disque système
-  En dessous de 10 % de libre, tout ralentit, y compris sur un SSD. C'est la panne la plus fréquente et la plus facile à réparer.
+Regarder ce qu'il reste de libre
+\`\`\`
+df -h /
+\`\`\`
+  En dessous de 10 % de libre, tout ralentit, y compris sur un SSD.
+Repérer les gros dossiers de ton dossier personnel
+\`\`\`
+du -xh --max-depth=1 ~ 2>/dev/null | sort -h | tail -15
+\`\`\`
+  L'Analyseur d'utilisation des disques montre la même chose en couleurs.
 Vider la corbeille
-Désinstaller les logiciels que tu n'utilises plus, en commençant par les plus gros
-Vider le cache du navigateur et le dossier des téléchargements
-Repérer les gros dossiers avec l'outil d'analyse du disque
-  Windows : Paramètres, Système, Stockage. macOS : Réglages, Général, Stockage. Linux : Analyseur d'utilisation des disques.
-Supprimer les vieilles sauvegardes locales et les points de restauration
-  Ils se cumulent sans rien demander et prennent des dizaines de gigas. Garde le plus récent.
+Nettoyer les paquets téléchargés et les paquets devenus inutiles
+\`\`\`
+sudo apt clean
+sudo apt autoremove --purge
+\`\`\`
+Réduire le journal système à sept jours
+\`\`\`
+sudo journalctl --vacuum-time=7d
+\`\`\`
+Ne garder que deux versions de chaque paquet Snap
+\`\`\`
+sudo snap set system refresh.retain=2
+\`\`\`
+Supprimer les vieux instantanés de sauvegarde
+  Timeshift et consorts prennent des dizaines de gigas sans rien demander. Garde le plus récent, jette les autres.
 ## Alléger le démarrage et le bureau
-Faire la liste de ce qui se lance au démarrage et couper tout ce qui n'est pas indispensable
-  Windows : Gestionnaire des tâches, onglet Démarrage. macOS : Réglages, Général, Ouverture. Linux : Applications au démarrage.
+Voir ce qui retarde le démarrage
+\`\`\`
+systemd-analyze blame | head -20
+\`\`\`
+Faire le ménage dans les applications au démarrage
+  Préférences système → Applications au démarrage sous Cinnamon ou Mate, Applications au démarrage sous GNOME.
+Couper les effets visuels du bureau
+  Sur une machine fatiguée, c'est le réglage qui se sent le plus tout de suite.
 Compter les onglets et les extensions du navigateur
   Chaque onglet est un programme à part entière, chaque extension aussi.
-Désactiver les animations et les effets visuels
-  Sur une machine fatiguée, c'est le réglage qui se sent le plus tout de suite.
-Redémarrer et vérifier si le démarrage est plus rapide
-## Mettre à jour, puis regarder le matériel
-Installer les mises à jour du système en attente, puis redémarrer
-Mettre à jour le navigateur
-  C'est le logiciel le plus sollicité de la machine, et celui qui progresse le plus vite.
-Écouter le ventilateur et toucher le châssis
-  Un ventilateur qui souffle en continu ou une machine brûlante : le processeur se bride tout seul. Dépoussiérer les grilles et le ventilateur à l'air sec.
-Regarder l'âge et le type du disque
-  Un disque à plateaux, qui cliquette, sur une machine de plus de cinq ans : c'est le premier suspect. Le remplacer par un SSD transforme la machine plus que n'importe quel réglage.
-Regarder la quantité de mémoire vive installée
-  4 Go ne suffisent plus pour un navigateur d'aujourd'hui. 8 Go est un minimum confortable, et une barrette coûte moins cher qu'une machine.
+Installer les mises à jour en attente, puis redémarrer
+## Vérifier le matériel
+Chercher les erreurs matérielles du dernier démarrage
+\`\`\`
+journalctl -p 3 -b | tail -30
+\`\`\`
+Vérifier la santé du disque
+\`\`\`
+sudo apt install smartmontools
+sudo smartctl -H /dev/sda
+\`\`\`
+  \`lsblk -d -e7\` donne le nom du disque si ce n'est pas sda.
+Vérifier que rien ne chauffe
+\`\`\`
+sensors
+\`\`\`
+  Au-delà de 80 °C en continu, le processeur se bride tout seul : dépoussiérer les grilles et le ventilateur.
+Regarder l'âge et le type du disque, et la mémoire installée
+  Un disque à plateaux sur une machine de plus de cinq ans est le premier suspect. 4 Go de mémoire ne suffisent plus pour un navigateur d'aujourd'hui.
 ## Si ça rame toujours
 Créer un compte utilisateur neuf et s'y connecter pour comparer
   Si tout est fluide sur ce compte, le problème est dans ta session, pas dans la machine.
-Démarrer en mode sans échec ou en session minimale et comparer encore
-Passer une analyse antivirus complète
-  L'antivirus fourni avec le système suffit. Évite les « nettoyeurs » et « optimiseurs » : ils font partie du problème plus souvent qu'ils ne le résolvent.
-Écrire ce que tu as constaté avant de demander de l'aide ou de réinstaller
+Démarrer une session légère pour comparer encore
+  Choisis une autre session à l'écran de connexion : Xfce ou LXQt tournent sur presque n'importe quoi.
+Rassembler la configuration avant de demander de l'aide
+\`\`\`
+inxi -Fzx
+\`\`\``
+},
+{
+  id:"windows", label:"Windows", time:"45 min",
+  steps:`## Constater avant de toucher à quoi que ce soit
+Noter quand ça rame exactement
+  Au démarrage, dans le navigateur, tout le temps, ou après quelques heures allumé : ce sont quatre pannes différentes.
+Noter ce qui a changé juste avant que ça commence
+  Un logiciel installé, une mise à jour, un disque qui s'est rempli. La cause est presque toujours le dernier changement.
+Utiliser Redémarrer, et pas Arrêter puis rallumer
+  Sous Windows, « Arrêter » ne vide pas tout : le système repart d'une image enregistrée. Seul « Redémarrer » repart vraiment de zéro.
+Ouvrir le Gestionnaire des tâches et rester deux minutes sur l'onglet Performances
+  Ctrl+Maj+Échap l'ouvre directement. S'il s'affiche en version réduite, clique sur « Plus de détails ».
+Décider laquelle des quatre ressources sature : processeur, mémoire, disque ou réseau
+  C'est la seule question qui oriente tout le reste.
+## Trouver ce qui mange les ressources
+Onglet Processus, trier par Processeur en cliquant sur l'en-tête de colonne
+  Un programme seul à 90 % en permanence n'est pas normal, même s'il porte un nom rassurant.
+Trier par Mémoire et fermer le plus gourmand
+  Si tout ralentit dès qu'on ouvre quelques onglets, c'est la mémoire et pas le processeur.
+Trier par Disque et regarder qui écrit en continu
+  Un disque à 100 % en permanence, c'est le symptôme le plus classique sur une machine à disque à plateaux.
+Ouvrir le Moniteur de ressources pour voir le détail
+  Gestionnaire des tâches → Performances → Ouvrir le Moniteur de ressources, en bas de la fenêtre.
+Vérifier qu'une mise à jour ou une analyse antivirus n'est pas en cours
+  Windows Update et l'analyse complète de Sécurité Windows monopolisent la machine pendant leur passage. Il faut les laisser finir.
+Fermer le programme coupable et vérifier si la machine repart
+## Rendre de la place au disque
+Regarder l'espace libre du disque système
+  Paramètres → Système → Stockage. En dessous de 10 % de libre, tout ralentit.
+Lancer le Nettoyage de disque en mode fichiers système
+  Tape \`cleanmgr\` dans la barre de recherche, choisis le disque C:, puis « Nettoyer les fichiers système ».
+Supprimer l'ancienne installation de Windows si elle est encore là
+  Le dossier Windows.old apparaît après une grosse mise à jour et pèse souvent plus de vingt gigas. Il disparaît tout seul au bout d'un mois.
+Activer l'Assistant Stockage
+  Paramètres → Système → Stockage → Assistant Stockage : il vide la corbeille et les fichiers temporaires tout seul.
+Vider la corbeille et le dossier Téléchargements
+Désinstaller les applications que tu n'utilises plus
+  Paramètres → Applications → Applications installées, trié par taille.
+Réduire l'espace réservé à la restauration système
+  Panneau de configuration → Système → Protection du système → Configurer. 5 % suffisent largement.
+## Alléger le démarrage et le bureau
+Couper les programmes au démarrage à impact élevé
+  Gestionnaire des tâches → onglet Applications de démarrage. La colonne Impact fait le tri à ta place.
+Couper les applications en arrière-plan inutiles
+  Paramètres → Applications → Applications installées → les trois points → Options avancées.
+Désactiver les animations
+  Paramètres → Accessibilité → Effets visuels, ou \`sysdm.cpl\` → Paramètres système avancés → Performances → Ajuster afin d'obtenir les meilleures performances.
+Compter les onglets et les extensions du navigateur
+  Chaque onglet est un programme à part entière, chaque extension aussi.
+Redémarrer et comparer le temps de démarrage
+## Mettre à jour et réparer
+Installer les mises à jour Windows en attente, puis redémarrer
+Mettre à jour les pilotes de la carte graphique
+  Par Windows Update ou par le site du fabricant. Un pilote graphique fatigué fait ramer toute l'interface.
+Lancer une analyse antivirus complète avec Sécurité Windows
+  L'antivirus fourni suffit. Évite les « nettoyeurs » et « optimiseurs » : ils font partie du problème plus souvent qu'ils ne le résolvent.
+Vérifier les fichiers système
+\`\`\`
+sfc /scannow
+\`\`\`
+  Dans une Invite de commandes ouverte en tant qu'administrateur. Si des erreurs restent, enchaîne avec \`DISM /Online /Cleanup-Image /RestoreHealth\`.
+Vérifier le disque
+\`\`\`
+chkdsk C: /scan
+\`\`\`
+## Vérifier le matériel
+Regarder si le disque système est un SSD ou un disque à plateaux
+  Gestionnaire des tâches → Performances → Disque, le type est écrit en haut à droite. Passer d'un disque à plateaux à un SSD transforme la machine plus que n'importe quel réglage.
+Regarder la quantité de mémoire installée
+  Gestionnaire des tâches → Performances → Mémoire. 4 Go ne suffisent plus, 8 Go est un minimum confortable.
+Écouter le ventilateur et toucher le châssis
+  Machine brûlante ou ventilateur en continu : le processeur se bride tout seul. Dépoussiérer les grilles à l'air sec.
+## Si ça rame toujours
+Faire un démarrage propre pour comparer
+  Tape \`msconfig\`, onglet Services, coche « Masquer tous les services Microsoft », puis désactive le reste et redémarre.
+Créer un compte utilisateur neuf et s'y connecter
+  Si tout est fluide sur ce compte, le problème est dans ta session, pas dans la machine.
+Écrire ce que tu as constaté avant de réinitialiser
+  Le modèle, l'âge, la ressource saturée, et les étapes de cette liste déjà faites. La réinitialisation en conservant les fichiers est un dernier recours, pas une première réponse.`
+},
+{
+  id:"mac", label:"macOS", time:"40 min",
+  steps:`## Constater avant de toucher à quoi que ce soit
+Noter quand ça rame exactement
+  Au démarrage, dans le navigateur, tout le temps, ou après quelques heures allumé : ce sont quatre pannes différentes.
+Noter ce qui a changé juste avant que ça commence
+  Un logiciel installé, une mise à jour de macOS, un disque qui s'est rempli. La cause est presque toujours le dernier changement.
+Redémarrer en décochant « Rouvrir les fenêtres »
+  Menu Pomme → Redémarrer. Rouvrir toutes les fenêtres d'avant, c'est repartir avec le problème.
+Ouvrir le Moniteur d'activité et le regarder deux minutes
+  Applications → Utilitaires → Moniteur d'activité, ou par Spotlight.
+Décider laquelle des ressources sature : processeur, mémoire, disque ou réseau
+  Les onglets du Moniteur d'activité portent exactement ces noms. C'est la seule question qui oriente tout le reste.
+## Trouver ce qui mange les ressources
+Onglet Processeur, trier par % processeur
+  Un programme seul à 90 % en permanence n'est pas normal, même s'il porte un nom rassurant.
+Onglet Mémoire, regarder le graphique « Pression sur la mémoire »
+  C'est lui qui compte, pas les chiffres. Vert : tout va bien. Jaune ou rouge : il manque de la mémoire vive.
+Regarder la ligne « Swap utilisé » en bas de l'onglet Mémoire
+  S'il grimpe et ne redescend jamais, la machine compense le manque de mémoire avec le disque. C'est la première cause des à-coups.
+Onglet Énergie, repérer les applications les plus consommatrices
+  Le navigateur arrive presque toujours en tête, et c'est souvent un seul onglet qui est en cause.
+Vérifier si Spotlight est en train d'indexer
+  Un processus mds ou mdworker en tête de liste après une mise à jour ou une restauration : c'est normal, il faut le laisser finir, parfois plusieurs heures.
+Vérifier qu'une sauvegarde Time Machine n'est pas en cours
+Quitter vraiment le programme coupable
+  La croix rouge ferme la fenêtre mais ne quitte pas l'application. C'est Cmd+Q, ou Quitter dans le menu, qui la ferme pour de bon.
+## Rendre de la place au disque
+Regarder l'espace libre
+  Réglages Système → Général → Stockage. En dessous de 10 % de libre, tout ralentit.
+Vider la corbeille, y compris celle de Photos
+  Photos garde les images supprimées trente jours dans un album à part.
+Vider le dossier Téléchargements
+Passer en revue les fichiers volumineux proposés par le Stockage
+  La section « Documents » du panneau Stockage trie tes plus gros fichiers toute seule.
+Supprimer les instantanés locaux de Time Machine
+  macOS garde des copies locales quand le disque de sauvegarde n'est pas branché. Elles se libèrent en branchant le disque et en laissant une sauvegarde se faire.
+Désinstaller les applications que tu n'utilises plus
+  Réglages Système → Général → Stockage → Applications, trié par taille.
+## Alléger le démarrage et le bureau
+Faire le ménage dans les ouvertures automatiques
+  Réglages Système → Général → Ouverture. Regarde aussi la liste « Autoriser en arrière-plan » juste en dessous : c'est là que se cachent les modules laissés par les logiciels désinstallés.
+Réduire les animations et la transparence
+  Réglages Système → Accessibilité → Moniteur → Réduire les animations et Réduire la transparence.
+Compter les onglets et les extensions du navigateur
+  Chaque onglet est un programme à part entière, chaque extension aussi.
+Prendre l'habitude de quitter les applications au lieu de les empiler
+  Un point sous l'icône du Dock veut dire que l'application tourne encore, même sans fenêtre ouverte.
+Redémarrer et comparer
+## Mettre à jour et vérifier le matériel
+Installer les mises à jour en attente, puis redémarrer
+  Réglages Système → Général → Mise à jour logicielle.
+Vérifier le disque avec l'Utilitaire de disque
+  Applications → Utilitaires → Utilitaire de disque, sélectionne le volume, puis SOS.
+Regarder l'état de la batterie sur un portable
+  Réglages Système → Batterie → l'icône d'information à côté de « État de la batterie ». Un « Service recommandé » s'accompagne souvent d'un bridage du processeur.
+Vérifier le mode d'alimentation
+  Réglages Système → Batterie : le mode économie d'énergie laissé en permanence ralentit la machine pour tenir plus longtemps.
+Regarder la mémoire installée et l'âge de la machine
+  Menu Pomme → À propos de ce Mac. Sur les Mac récents, la mémoire n'est pas remplaçable : 8 Go partagés se remplissent vite avec un navigateur ouvert.
+Écouter le ventilateur et toucher le châssis
+  Machine brûlante ou ventilateur en continu : le processeur se bride tout seul. Dépoussiérer les grilles à l'air sec.
+## Si ça rame toujours
+Démarrer en mode sans échec et comparer
+  Sur Mac Apple Silicon : éteindre, puis garder le bouton d'alimentation appuyé jusqu'aux options de démarrage. Sur Mac Intel : garder Maj appuyée au démarrage.
+Créer un nouvel utilisateur et s'y connecter pour comparer
+  Si tout est fluide sur ce compte, le problème est dans ta session, pas dans la machine.
+Se méfier des logiciels de nettoyage installés un jour
+  Les « optimiseurs » pour Mac font partie du problème plus souvent qu'ils ne le résolvent. Les désinstaller fait partie du dépannage.
+Écrire ce que tu as constaté avant de réinstaller
   Le modèle, l'âge, la ressource saturée, et les étapes de cette liste déjà faites.`
+}
+  ]
 }
 ];
 
@@ -779,28 +990,78 @@ function allTutos(){
 }
 function getTuto(id){ return allTutos().find(t => t.id === id) || null; }
 
-function stepsOf(tuto){ return withKeys(parseSteps(tuto.steps)); }
-
-function stateOf(tuto){
-  const items = stepsOf(tuto);
-  const steps = items.filter(i => i.type === "step");
-  const done  = (progress[tuto.id] && progress[tuto.id].done) || {};
-  const doneCount = steps.filter(s => done[s.key]).length;
-  const current = steps.find(s => !done[s.key]) || null;
-  return { items, steps, done, doneCount, total: steps.length, current,
-           finishedAt: progress[tuto.id] && progress[tuto.id].finishedAt };
+/* ---- Versions d'un même tuto (Linux / Windows / macOS) ----
+   Un tuto porte soit `steps`, soit une liste `variants`. Chaque version a sa
+   propre progression, rangée sous la clé « idDuTuto#idDeLaVersion ». */
+function variantsOf(tuto){
+  return Array.isArray(tuto.variants) && tuto.variants.length ? tuto.variants : null;
+}
+const OS_GUESS = (function(){
+  const ua = navigator.userAgent || "";
+  if(/Windows|Win64|Win32/i.test(ua)) return "windows";
+  if(/Macintosh|Mac OS X|iPad|iPhone/i.test(ua)) return "mac";
+  if(/Linux|X11|CrOS|Android/i.test(ua)) return "linux";
+  return null;
+})();
+function defaultVariant(tuto){
+  const vs = variantsOf(tuto);
+  if(!vs) return null;
+  const saved = lastVariant[tuto.id];
+  if(saved && vs.some(v => v.id === saved)) return saved;                 /* le dernier choix */
+  if(OS_GUESS && vs.some(v => v.id === OS_GUESS)) return OS_GUESS;        /* sinon le système d'ici */
+  return vs[0].id;
+}
+function resolveVariant(tuto, vid){
+  const vs = variantsOf(tuto);
+  if(!vs) return null;
+  return (vid && vs.some(v => v.id === vid)) ? vid : defaultVariant(tuto);
+}
+function variantOf(tuto, vid){
+  const vs = variantsOf(tuto);
+  return vs ? (vs.find(v => v.id === vid) || vs[0]) : null;
+}
+function sourceOf(tuto, vid){
+  const v = variantOf(tuto, vid);
+  return v ? v.steps : tuto.steps;
+}
+function progIdOf(tuto, vid){ return vid ? tuto.id + "#" + vid : tuto.id; }
+function allSteps(tuto){
+  const vs = variantsOf(tuto);
+  return vs ? vs.map(v => v.label + " " + v.steps).join("\n") : tuto.steps;
 }
 
-function setDone(tutoId, key, value, total, doneCount){
-  const p = progress[tutoId] || (progress[tutoId] = { done:{} });
+function stepsOf(tuto, vid){ return withKeys(parseSteps(sourceOf(tuto, vid))); }
+
+function stateOf(tuto, vid){
+  vid = resolveVariant(tuto, vid);
+  const pid   = progIdOf(tuto, vid);
+  const items = stepsOf(tuto, vid);
+  const steps = items.filter(i => i.type === "step");
+  const done  = (progress[pid] && progress[pid].done) || {};
+  const doneCount = steps.filter(s => done[s.key]).length;
+  const current = steps.find(s => !done[s.key]) || null;
+  return { items, steps, done, doneCount, total: steps.length, current, vid, pid,
+           variant: variantOf(tuto, vid),
+           finishedAt: progress[pid] && progress[pid].finishedAt };
+}
+
+function setDone(progId, key, value, total, doneCount){
+  const p = progress[progId] || (progress[progId] = { done:{} });
   if(!p.done) p.done = {};
   if(value) p.done[key] = 1; else delete p.done[key];
   if(total > 0 && doneCount === total) p.finishedAt = todayISO();
   else delete p.finishedAt;
   save(LS_PROG, progress);
 }
-function resetProgress(tutoId){
-  delete progress[tutoId];
+function resetProgress(progId){
+  delete progress[progId];
+  save(LS_PROG, progress);
+}
+/* Supprime la progression d'un tuto, toutes versions confondues. */
+function forgetTuto(tutoId){
+  Object.keys(progress).forEach(k => {
+    if(k === tutoId || k.startsWith(tutoId + "#")) delete progress[k];
+  });
   save(LS_PROG, progress);
 }
 function todayISO(){ return new Date().toISOString().slice(0,10); }
@@ -826,7 +1087,7 @@ function rich(s){
 }
 function gaugeHTML(doneCount, total, currentIndex){
   if(total === 0) return '<div class="gauge"></div>';
-  if(total > 30){
+  if(total > 40){   /* au-delà, les segments deviennent illisibles : barre continue */
     const pct = Math.round(doneCount / total * 100);
     return '<div class="gauge bar"><i style="width:' + pct + '%"></i></div>';
   }
@@ -852,21 +1113,35 @@ function toast(msg){
 let filter = "all";
 let query  = "";
 
+/* Un tuto à versions est « en cours » dès qu'une seule de ses versions l'est. */
+function matchFilter(s){
+  if(filter === "done")  return s.total > 0 && s.doneCount === s.total;
+  if(filter === "doing") return s.doneCount > 0 && s.doneCount < s.total;
+  if(filter === "todo")  return s.doneCount === 0;
+  return true;
+}
+
 function renderList(){
   const body = $("#listBody");
-  const tutos = allTutos().map(t => ({ t, s: stateOf(t) }));
+  const tutos = allTutos().map(t => {
+    const vs = variantsOf(t);
+    const states = vs ? vs.map(v => stateOf(t, v.id)) : [stateOf(t)];
+    const def = vs ? defaultVariant(t) : null;
+    return { t, states, main: states.find(s => s.vid === def) || states[0] };
+  });
 
   const q = query.trim().toLowerCase();
-  let shown = tutos.filter(({ t, s }) => {
+  let shown = tutos.filter(({ t, states }) => {
     if(q){
-      const hay = (t.title + " " + (t.desc||"") + " " + (t.cat||"") + " " + t.steps).toLowerCase();
+      const hay = (t.title + " " + (t.desc||"") + " " + (t.cat||"") + " " + allSteps(t)).toLowerCase();
       if(!hay.includes(q)) return false;
     }
-    if(filter === "done")  return s.total > 0 && s.doneCount === s.total;
-    if(filter === "doing") return s.doneCount > 0 && s.doneCount < s.total;
-    if(filter === "todo")  return s.doneCount === 0;
-    return true;
-  });
+    return states.some(matchFilter);
+  }).map(({ t, states, main }) => ({
+    /* On montre la version sur laquelle le clic va tomber, sauf si une autre
+       est celle que le filtre a fait ressortir. */
+    t, s: matchFilter(main) ? main : (states.find(matchFilter) || main)
+  }));
 
   if(!shown.length){
     body.innerHTML = '<div class="empty">' +
@@ -898,11 +1173,15 @@ function renderList(){
         statusCls = "now";
       }
       else status = "Pas encore commencé";
+      if(s.variant) status = s.variant.label + " · " + status;   /* on dit de quelle version on parle */
 
-      const size = s.total + " étape" + (s.total > 1 ? "s" : "") + (t.time ? " · " + t.time : "");
-      html += '<button class="tuto-card" data-open="' + esc(t.id) + '">' +
+      const vs = variantsOf(t);
+      const time = (s.variant && s.variant.time) || t.time;
+      const size = s.total + " étape" + (s.total > 1 ? "s" : "") + (time ? " · " + time : "");
+      html += '<button class="tuto-card" data-open="' + esc(t.id) + '"' +
+        (s.vid ? ' data-variant="' + esc(s.vid) + '"' : "") + ">" +
         '<div class="card-top"><span class="eyebrow">' + esc(size) + "</span>" +
-        '<span class="eyebrow">' + (t.builtin ? "fourni" : "à moi") + "</span></div>" +
+        '<span class="eyebrow">' + (vs ? vs.length + " versions" : t.builtin ? "fourni" : "à moi") + "</span></div>" +
         "<h2>" + esc(t.title) + "</h2>" +
         (t.desc ? '<p class="desc">' + esc(t.desc) + "</p>" : "") +
         gaugeHTML(s.doneCount, s.total, s.current ? s.current.index : 0) +
@@ -919,12 +1198,15 @@ function renderList(){
    Vue tuto
    =================================================================== */
 let openId = null;
+let openVariant = null;
 
-function renderTuto(id){
+function renderTuto(id, vid){
   const t = getTuto(id);
   if(!t){ go("#/"); return; }
+  const s = stateOf(t, vid);
   openId = id;
-  const s = stateOf(t);
+  openVariant = s.vid;
+  if(s.vid && lastVariant[id] !== s.vid){ lastVariant[id] = s.vid; save(LS_VARIANT, lastVariant); }
 
   $("#tutoTitle").textContent = t.title;
   $("#tutoCount").textContent = s.doneCount + " / " + s.total;
@@ -933,9 +1215,18 @@ function renderTuto(id){
   $("#tutoDesc").textContent = t.desc || "";
   $("#tutoDesc").hidden = !t.desc;
 
+  const vs = variantsOf(t);
+  $("#tutoVariants").innerHTML = vs
+    ? '<span class="eyebrow">Version</span><div class="segmented" role="tablist">' +
+      vs.map(v => '<button role="tab" data-variant="' + esc(v.id) + '" aria-selected="' +
+        (v.id === s.vid) + '">' + esc(v.label) + "</button>").join("") + "</div>"
+    : "";
+  $("#tutoVariants").hidden = !vs;
+
   $("#tutoMeta").innerHTML =
     (t.cat ? '<span class="tag">' + esc(t.cat) + "</span>" : "") +
-    (t.time ? '<span class="tag">' + esc(t.time) + "</span>" : "") +
+    ((s.variant && s.variant.time) || t.time
+      ? '<span class="tag">' + esc((s.variant && s.variant.time) || t.time) + "</span>" : "") +
     '<span class="tag">' + s.total + " étape" + (s.total > 1 ? "s" : "") + "</span>";
 
   let html = "";
@@ -989,7 +1280,7 @@ function renderActions(t, s){
 function refreshTutoChrome(){
   const t = getTuto(openId);
   if(!t) return;
-  const s = stateOf(t);
+  const s = stateOf(t, openVariant);
   $("#tutoCount").textContent = s.doneCount + " / " + s.total;
   const g = $("#tutoGauge");
   const fresh = document.createElement("div");
@@ -1004,7 +1295,7 @@ function refreshTutoChrome(){
 
   const complete = s.total > 0 && s.doneCount === s.total;
   const hadFinish = !!$("#tutoFinish").firstChild;
-  if(complete !== hadFinish) renderTuto(openId);
+  if(complete !== hadFinish) renderTuto(openId, openVariant);
   else renderActions(t, s);
 }
 
@@ -1072,7 +1363,7 @@ function deleteTuto(id){
   if(!confirm("Supprimer « " + t.title + " » et sa progression ? C'est définitif.")) return;
   custom = custom.filter(x => x.id !== id);
   save(LS_CUSTOM, custom);
-  resetProgress(id);
+  forgetTuto(id);
   toast("Tuto supprimé.");
   go("#/");
 }
@@ -1136,12 +1427,12 @@ function show(viewId){
 }
 function route(){
   const h = location.hash || "#/";
-  const mTuto = h.match(/^#\/t\/(.+)$/);
+  const mTuto = h.match(/^#\/t\/([^\/]+)(?:\/([^\/]+))?$/);
   const mEdit = h.match(/^#\/edit\/(.+)$/);
 
   if(mTuto){
     show("viewTuto");
-    renderTuto(decodeURIComponent(mTuto[1]));
+    renderTuto(decodeURIComponent(mTuto[1]), mTuto[2] ? decodeURIComponent(mTuto[2]) : null);
     window.scrollTo(0, 0);
   }else if(h === "#/new"){
     show("viewEdit");
@@ -1180,7 +1471,12 @@ $("#filters").addEventListener("click", e => {
 
 $("#listBody").addEventListener("click", e => {
   const card = e.target.closest("[data-open]");
-  if(card){ listScroll = window.scrollY; go("#/t/" + encodeURIComponent(card.dataset.open)); return; }
+  if(card){
+    listScroll = window.scrollY;
+    go("#/t/" + encodeURIComponent(card.dataset.open) +
+       (card.dataset.variant ? "/" + encodeURIComponent(card.dataset.variant) : ""));
+    return;
+  }
   if(e.target.closest('[data-act="new"]')) go("#/new");
 });
 
@@ -1201,6 +1497,13 @@ $("#fileInput").addEventListener("change", e => {
   e.target.value = "";
 });
 
+/* Changer de version (Linux / Windows / macOS) */
+$("#tutoVariants").addEventListener("click", e => {
+  const b = e.target.closest("[data-variant]");
+  if(!b || !openId) return;
+  go("#/t/" + encodeURIComponent(openId) + "/" + encodeURIComponent(b.dataset.variant));
+});
+
 /* Cocher une étape */
 $("#tutoSteps").addEventListener("click", e => {
   const copy = e.target.closest(".copy");
@@ -1217,12 +1520,12 @@ $("#tutoSteps").addEventListener("click", e => {
 
   const t = getTuto(openId);
   if(!t) return;
-  const s = stateOf(t);
+  const s = stateOf(t, openVariant);
   const key = li.dataset.key;
   const willCheck = !s.done[key];
   const newCount = s.doneCount + (willCheck ? 1 : -1);
 
-  setDone(openId, key, willCheck, s.total, newCount);
+  setDone(s.pid, key, willCheck, s.total, newCount);
   li.classList.toggle("checked", willCheck);
   li.querySelector(".toggle").setAttribute("aria-checked", String(willCheck));
   refreshTutoChrome();
@@ -1248,9 +1551,11 @@ document.addEventListener("click", e => {
   const act = b.dataset.act;
   if(act === "reset"){
     const t = getTuto(openId);
-    if(!confirm("Décocher toutes les étapes de « " + t.title + " » ?")) return;
-    resetProgress(openId);
-    renderTuto(openId);
+    const s = stateOf(t, openVariant);
+    const quoi = s.variant ? t.title + " » en version " + s.variant.label : t.title + " »";
+    if(!confirm("Décocher toutes les étapes de « " + quoi + " ?")) return;
+    resetProgress(s.pid);
+    renderTuto(openId, openVariant);
     window.scrollTo({ top:0, behavior:"smooth" });
     toast("Checklist remise à zéro.");
   }else if(act === "edit"){
@@ -1259,7 +1564,11 @@ document.addEventListener("click", e => {
     deleteTuto(openId);
   }else if(act === "dup"){
     const t = getTuto(openId);
-    pendingSeed = { title: t.title + " (ma version)", cat:t.cat, time:t.time, desc:t.desc, steps:t.steps };
+    const v = variantOf(t, openVariant);
+    pendingSeed = {
+      title: t.title + (v ? " (" + v.label + ", ma version)" : " (ma version)"),
+      cat: t.cat, time: (v && v.time) || t.time, desc: t.desc, steps: sourceOf(t, openVariant)
+    };
     go("#/new");
   }
 });
