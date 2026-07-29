@@ -1465,6 +1465,133 @@ Passer une vraie semaine dessus avant de décider
 Quand la décision est prise, passer à l'onglet Disque entier ou À côté de Windows`
 }
   ]
+},
+{
+  id:"b-cache", cat:"Entretien", time:"5 min",
+  title:"Vider le cache et supprimer les cookies",
+  desc:"Ce qu'on efface, ce qu'on perd, et comment viser un seul site plutôt que tout effacer. Chrome et dérivés, Firefox, Safari.",
+  variants:[
+{
+  id:"chrome", label:"Chrome", time:"5 min",
+  steps:`## Savoir ce qu'on efface
+Cette version vaut aussi pour Edge, Brave, Opera et Vivaldi
+  Ils partagent le même moteur : les mêmes raccourcis et les mêmes menus, à quelques mots près.
+Distinguer le cache des cookies
+  Le cache est une copie des images et des fichiers des sites, gardée pour aller plus vite. Le vider ne fait rien perdre : les pages se rechargeront une fois plus lentement. Les cookies, eux, sont ce qui te garde connecté : les supprimer te déconnecte de tous les sites d'un coup.
+Vérifier que tu connais tes mots de passe avant de supprimer les cookies
+  C'est l'étape qu'on saute et qu'on regrette. Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
+Essayer d'abord le rechargement forcé, qui suffit dans la plupart des cas
+  Ctrl+Maj+R sur Windows et Linux, Cmd+Maj+R sur Mac. Ça recharge la page en ignorant le cache, sans rien effacer d'autre.
+## Viser un seul site, la bonne méthode
+Cliquer sur l'icône à gauche de l'adresse du site
+Ouvrir Cookies et données de sites, puis Gérer les données du site
+Supprimer les données de ce site uniquement
+  Tu restes connecté partout ailleurs. C'est ce qu'il faut faire quand un seul site déraille.
+Recharger la page et vérifier que le problème a disparu
+## Tout vider, quand c'est vraiment nécessaire
+Ouvrir la fenêtre d'effacement
+  Ctrl+Maj+Suppr sur Windows et Linux, Cmd+Maj+Suppr sur Mac. Ou l'adresse \`chrome://settings/clearBrowserData\`.
+Choisir la période Toutes les périodes
+  La période par défaut est la dernière heure, ce qui ne règle presque jamais rien.
+Cocher Images et fichiers en cache
+Cocher Cookies et autres données de sites seulement si c'est nécessaire
+  C'est cette case-là qui déconnecte de tout. Le cache seul se vide sans conséquence.
+Laisser les mots de passe et les données de formulaires décochés
+  Rien n'oblige à les supprimer, et leur perte est définitive si rien ne les sauvegarde ailleurs.
+Lancer l'effacement, puis fermer et rouvrir le navigateur
+## Les cas particuliers
+Vider le cache DNS interne du navigateur si un site pointe encore vers l'ancienne adresse
+  Ouvre \`chrome://net-internals/#dns\` puis Clear host cache. Utile après un changement d'hébergement.
+Utiliser le rechargement complet des outils de développement pour un site en cours de travail
+  F12 pour ouvrir les outils, puis clic droit maintenu sur le bouton Recharger, et Vider le cache et effectuer une actualisation forcée.
+Penser aux service workers pour une application web qui sert une vieille version
+  F12, onglet Application, Service workers, Unregister. Une application installée peut resservir sa version en cache même après un vidage classique.
+Refaire l'opération sur le téléphone, qui a son propre cache
+  Chrome mobile : les trois points, Historique, Effacer les données de navigation. Rien n'est partagé avec l'ordinateur de ce côté-là.
+## Après
+Se reconnecter aux sites importants et vérifier que rien ne manque
+Vérifier que les codes de double authentification arrivent bien
+  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
+},
+{
+  id:"firefox", label:"Firefox", time:"5 min",
+  steps:`## Savoir ce qu'on efface
+Distinguer le cache des cookies
+  Le cache est une copie des images et des fichiers des sites, gardée pour aller plus vite. Le vider ne fait rien perdre : les pages se rechargeront une fois plus lentement. Les cookies, eux, sont ce qui te garde connecté : les supprimer te déconnecte de tous les sites d'un coup.
+Vérifier que tu connais tes mots de passe avant de supprimer les cookies
+  C'est l'étape qu'on saute et qu'on regrette. Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
+Essayer d'abord le rechargement forcé, qui suffit dans la plupart des cas
+  Ctrl+Maj+R sur Windows et Linux, Cmd+Maj+R sur Mac. Ça recharge la page en ignorant le cache, sans rien effacer d'autre.
+## Viser un seul site, la bonne méthode
+Cliquer sur le cadenas à gauche de l'adresse du site
+Choisir Effacer les cookies et les données de site
+Confirmer pour ce site uniquement
+  Tu restes connecté partout ailleurs. C'est ce qu'il faut faire quand un seul site déraille.
+Recharger la page et vérifier que le problème a disparu
+## Tout vider, quand c'est vraiment nécessaire
+Ouvrir la fenêtre Effacer les données récentes
+  Ctrl+Maj+Suppr sur Windows et Linux, Cmd+Maj+Suppr sur Mac.
+Choisir l'intervalle Tout
+Cocher Cache, et ne cocher Cookies que si c'est nécessaire
+  C'est la case Cookies qui déconnecte de tout. Le cache seul se vide sans conséquence.
+Laisser les identifiants et mots de passe enregistrés en dehors de l'opération
+Passer plutôt par Paramètres, Vie privée et sécurité pour un tri fin
+  La section Cookies et données de sites propose Gérer les données, qui liste les sites un par un avec la place occupée. C'est là qu'on fait le ménage sans tout casser.
+Déclarer des exceptions pour les sites où tu veux rester connecté
+  Toujours dans Vie privée et sécurité, le bouton Gérer les exceptions garde ces sites hors des effacements automatiques.
+## Les cas particuliers
+Vider le cache sans passer par les menus
+  Ouvre l'adresse \`about:cache\` pour voir son contenu, et \`about:preferences#privacy\` pour aller droit aux réglages.
+Envisager Réparer Firefox si le navigateur reste lent ou instable après le nettoyage
+  L'adresse \`about:support\` propose Réparer Firefox : le profil est réinitialisé, les marque-pages et mots de passe sont conservés, les extensions et réglages sont remis à zéro. Une ancienne copie du profil est déposée sur le bureau.
+Penser aux service workers pour une application web qui sert une vieille version
+  Ouvre \`about:debugging#/runtime/this-firefox\`, section Service Workers, puis Désinscrire.
+Refaire l'opération sur le téléphone, qui a son propre cache
+  Firefox mobile : les trois points, Paramètres, Supprimer les données de navigation. Rien n'est partagé avec l'ordinateur de ce côté-là.
+## Après
+Se reconnecter aux sites importants et vérifier que rien ne manque
+Vérifier que les codes de double authentification arrivent bien
+  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
+},
+{
+  id:"safari", label:"Safari", time:"5 min",
+  steps:`## Savoir ce qu'on efface
+Distinguer le cache des cookies
+  Le cache est une copie des images et des fichiers des sites, gardée pour aller plus vite. Le vider ne fait rien perdre : les pages se rechargeront une fois plus lentement. Les cookies, eux, sont ce qui te garde connecté : les supprimer te déconnecte de tous les sites d'un coup.
+Vérifier que tu connais tes mots de passe avant de supprimer les cookies
+  C'est l'étape qu'on saute et qu'on regrette. Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
+Retenir que sur iPhone et iPad, Effacer efface partout à la fois
+  Si Safari est synchronisé par iCloud, l'effacement se propage aux autres appareils du même compte. Ce n'est pas une opération locale.
+Essayer d'abord le rechargement forcé, qui suffit dans la plupart des cas
+  Cmd+Maj+R sur Mac. Sur iPhone et iPad, maintenir le bouton de rechargement dans la barre d'adresse.
+## Sur Mac, viser un seul site
+Ouvrir Safari, Réglages, onglet Confidentialité
+Cliquer sur Gérer les données de sites web
+Chercher le site dans la liste et cliquer sur Supprimer
+  Tu restes connecté partout ailleurs. C'est ce qu'il faut faire quand un seul site déraille.
+Recharger la page et vérifier que le problème a disparu
+## Sur Mac, tout vider
+Vider le cache seul par le menu Développement
+  S'il n'apparaît pas : Safari, Réglages, Avancés, cocher Afficher les fonctionnalités pour les développeurs web. Ensuite Développement, Vider les caches. C'est la seule façon de vider le cache sans toucher aux cookies.
+Tout effacer par Historique, Effacer l'historique
+  Cette commande efface l'historique, les cookies et le cache d'un seul geste. Choisis la période Tout l'historique.
+Ou par Réglages, Confidentialité, Gérer les données de sites web, Tout supprimer
+Fermer puis rouvrir Safari
+## Sur iPhone et iPad
+Ouvrir Réglages, chercher Safari dans la liste des apps
+Toucher Effacer historique, données de site
+  Un seul bouton pour l'historique, les cookies et le cache. Il n'y a pas de réglage plus fin à cet endroit.
+Choisir la période et le profil concernés si l'appareil en propose
+Passer par Avancé, Données de sites web pour supprimer site par site
+  Réglages, Safari, Avancé, Données de sites web : la liste site par site avec la place occupée, et le balayage vers la gauche pour n'en supprimer qu'un.
+Vider aussi le cache hors ligne des apps qui affichent des pages web
+  Beaucoup d'apps ouvrent les liens dans leur propre navigateur intégré, avec leur cache à elles. Ça se vide en désinstallant l'app, ou dans ses réglages internes.
+## Après
+Se reconnecter aux sites importants et vérifier que rien ne manque
+Vérifier que les codes de double authentification arrivent bien
+  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
+}
+  ]
 }
 ];
 
