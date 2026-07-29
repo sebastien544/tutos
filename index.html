@@ -709,96 +709,65 @@ Vérifier la date du dernier fichier copié
 Noter la date de ce tour dans le calendrier pour le mois prochain`
 },
 {
-  id:"b-lent", cat:"Entretien", time:"30 min",
+  id:"b-lent", cat:"Entretien", time:"45 min",
   title:"Dépanner un ordinateur qui rame",
-  desc:"Chercher dans l'ordre : d'abord regarder ce qui se passe, ensuite faire de la place, et seulement à la fin soupçonner le matériel.",
+  desc:"Une méthode qui vaut pour Windows, macOS et Linux : trouver quelle ressource sature, puis ne traiter que celle-là.",
   steps:`## Constater avant de toucher à quoi que ce soit
 Noter quand ça rame exactement
   Au démarrage, dans le navigateur, tout le temps, ou après quelques heures allumé : ce sont quatre pannes différentes.
-Redémarrer et regarder si le problème revient tout de suite
-  Un ordinateur allumé depuis des semaines finit toujours par ramer. \`uptime\` dit depuis quand il tourne.
-Ouvrir le Moniteur système et rester deux minutes sur l'onglet Ressources
-  Menu → Moniteur système. Processeur à fond, mémoire pleine ou disque qui gratte : le dépannage n'est pas le même.
-## Trouver ce qui mange les ressources
-Installer htop, une fois pour toutes
-\`\`\`
-sudo apt install htop
-\`\`\`
-Classer les programmes par processeur
-  Lance \`htop\`, puis F6 et choisis PERCENT_CPU. Sans htop, \`top\` puis la touche Maj+P fait la même chose.
-Classer les programmes par mémoire
-\`\`\`
-ps aux --sort=-%mem | head -12
-\`\`\`
-Vérifier si la mémoire est saturée et si le swap travaille
-\`\`\`
-free -h
-swapon --show
-\`\`\`
-  Un swap occupé en permanence veut dire que la machine manque de mémoire vive. C'est la première cause des ralentissements par à-coups.
-Fermer le programme coupable et vérifier si la machine repart
-  S'il revient tout seul à chaque démarrage, c'est le moment de le désinstaller.
+Noter ce qui a changé juste avant que ça commence
+  Un logiciel installé, une mise à jour, un disque qui s'est rempli. La cause est presque toujours le dernier changement.
+Éteindre et rallumer pour de bon
+  Pas la mise en veille : un vrai redémarrage. Beaucoup de lenteurs disparaissent là et ne reviennent pas avant des semaines.
+Ouvrir le moniteur d'activité et le regarder pendant deux minutes
+  Windows : Gestionnaire des tâches, par Ctrl+Maj+Échap. macOS : Moniteur d'activité. Linux : Moniteur système.
+Décider laquelle des quatre ressources sature : processeur, mémoire, disque ou réseau
+  C'est la seule question qui oriente tout le reste. Une seule des quatre est en cause dans la grande majorité des cas.
+## Suivre la ressource saturée
+Processeur à fond : trier la liste par processeur et regarder qui est en tête
+  Un programme seul à 90 % en permanence n'est pas normal, même s'il porte un nom rassurant.
+Mémoire pleine : trier par mémoire, fermer le plus gourmand, voir si la machine repart
+  Si tout ralentit dès qu'on ouvre quelques onglets, c'est la mémoire et pas le processeur.
+Disque à 100 % : trouver ce qui écrit en continu
+  Antivirus, indexation, synchronisation avec le nuage, sauvegarde. Normal pendant une heure après une grosse mise à jour, anormal pendant trois jours.
+Réseau saturé : couper la synchronisation en cours et voir si l'interface redevient fluide
+Rien de saturé mais tout est lent : passer directement à la partie matériel
 ## Rendre de la place au disque
-Regarder ce qu'il reste de libre
-\`\`\`
-df -h /
-\`\`\`
-  En dessous de 10 % de libre, tout ralentit, y compris sur un SSD.
-Repérer les gros dossiers de ton dossier personnel
-\`\`\`
-du -xh --max-depth=1 ~ 2>/dev/null | sort -h | tail -15
-\`\`\`
-  L'Analyseur d'utilisation des disques montre la même chose en couleurs.
+Vérifier l'espace libre du disque système
+  En dessous de 10 % de libre, tout ralentit, y compris sur un SSD. C'est la panne la plus fréquente et la plus facile à réparer.
 Vider la corbeille
-Nettoyer les paquets téléchargés et les paquets devenus inutiles
-\`\`\`
-sudo apt clean
-sudo apt autoremove --purge
-\`\`\`
-Réduire le journal système à sept jours
-\`\`\`
-sudo journalctl --vacuum-time=7d
-\`\`\`
-Ne garder que deux versions de chaque paquet Snap
-\`\`\`
-sudo snap set system refresh.retain=2
-\`\`\`
-Ouvrir Timeshift et supprimer les vieux instantanés
-  Timeshift prend des dizaines de gigas sans rien demander. Garde le plus récent, jette les autres.
+Désinstaller les logiciels que tu n'utilises plus, en commençant par les plus gros
+Vider le cache du navigateur et le dossier des téléchargements
+Repérer les gros dossiers avec l'outil d'analyse du disque
+  Windows : Paramètres, Système, Stockage. macOS : Réglages, Général, Stockage. Linux : Analyseur d'utilisation des disques.
+Supprimer les vieilles sauvegardes locales et les points de restauration
+  Ils se cumulent sans rien demander et prennent des dizaines de gigas. Garde le plus récent.
 ## Alléger le démarrage et le bureau
-Voir ce qui retarde le démarrage
-\`\`\`
-systemd-analyze blame | head -20
-\`\`\`
-Faire le ménage dans Préférences système → Applications au démarrage
-Couper les effets visuels dans Préférences système → Effets
-  Sur une machine fatiguée, c'est le réglage qui se sent le plus tout de suite.
+Faire la liste de ce qui se lance au démarrage et couper tout ce qui n'est pas indispensable
+  Windows : Gestionnaire des tâches, onglet Démarrage. macOS : Réglages, Général, Ouverture. Linux : Applications au démarrage.
 Compter les onglets et les extensions du navigateur
   Chaque onglet est un programme à part entière, chaque extension aussi.
-Installer les mises à jour en attente, puis redémarrer
-  Gestionnaire de mises à jour, dans la barre des tâches.
-## Si ça rame encore
-Chercher les erreurs matérielles du dernier démarrage
-\`\`\`
-journalctl -p 3 -b | tail -30
-\`\`\`
-Vérifier la santé du disque
-\`\`\`
-sudo apt install smartmontools
-sudo smartctl -H /dev/sda
-\`\`\`
-  \`lsblk -d -e7\` donne le nom du disque si ce n'est pas sda.
-Vérifier que rien ne chauffe
-\`\`\`
-sensors
-\`\`\`
-  Au-delà de 80 °C en continu, le processeur se bride tout seul : dépoussiérer les grilles et le ventilateur.
+Désactiver les animations et les effets visuels
+  Sur une machine fatiguée, c'est le réglage qui se sent le plus tout de suite.
+Redémarrer et vérifier si le démarrage est plus rapide
+## Mettre à jour, puis regarder le matériel
+Installer les mises à jour du système en attente, puis redémarrer
+Mettre à jour le navigateur
+  C'est le logiciel le plus sollicité de la machine, et celui qui progresse le plus vite.
+Écouter le ventilateur et toucher le châssis
+  Un ventilateur qui souffle en continu ou une machine brûlante : le processeur se bride tout seul. Dépoussiérer les grilles et le ventilateur à l'air sec.
+Regarder l'âge et le type du disque
+  Un disque à plateaux, qui cliquette, sur une machine de plus de cinq ans : c'est le premier suspect. Le remplacer par un SSD transforme la machine plus que n'importe quel réglage.
+Regarder la quantité de mémoire vive installée
+  4 Go ne suffisent plus pour un navigateur d'aujourd'hui. 8 Go est un minimum confortable, et une barrette coûte moins cher qu'une machine.
+## Si ça rame toujours
 Créer un compte utilisateur neuf et s'y connecter pour comparer
   Si tout est fluide sur ce compte, le problème est dans ta session, pas dans la machine.
-Rassembler la configuration avant de demander de l'aide
-\`\`\`
-inxi -Fzx
-\`\`\``
+Démarrer en mode sans échec ou en session minimale et comparer encore
+Passer une analyse antivirus complète
+  L'antivirus fourni avec le système suffit. Évite les « nettoyeurs » et « optimiseurs » : ils font partie du problème plus souvent qu'ils ne le résolvent.
+Écrire ce que tu as constaté avant de demander de l'aide ou de réinstaller
+  Le modèle, l'âge, la ressource saturée, et les étapes de cette liste déjà faites.`
 }
 ];
 
