@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#DDE3DB">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tutos">
+<meta name="description" content="Des tutos sous forme de checklist : on coche, on reprend là où on s'est arrêté.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Tutos — checklists pas à pas</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='14' y='10' width='72' height='80' rx='8' fill='%23F8FAF6' stroke='%23132019' stroke-width='6'/><rect x='26' y='28' width='16' height='16' rx='3' fill='%231C7A57'/><path d='M29 36l4 4 7-8' stroke='%23F8FAF6' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/><rect x='50' y='33' width='26' height='6' rx='3' fill='%23BCC7BE'/><rect x='26' y='54' width='16' height='16' rx='3' fill='none' stroke='%23BCC7BE' stroke-width='4'/><rect x='50' y='59' width='26' height='6' rx='3' fill='%23BCC7BE'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Fiche plastifiée d'atelier : vert-de-gris, encre profonde, signaux ambre/vert */
+  --field:#DDE3DB;
+  --card:#F8FAF6;
+  --card-2:#EEF2EB;
+  --ink:#132019;
+  --ink-soft:#5A6B61;
+  --rule:#BCC7BE;
+  --rule-soft:#D3DBD2;
+  --go:#1C7A57;
+  --go-soft:#E1F0E7;
+  --amber:#B87610;
+  --amber-soft:#FBEFD9;
+  --stamp:#A8382B;
+
+  --font-display:"Archivo","Archivo Narrow",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --radius:10px;
+  --shadow:0 1px 2px rgba(19,32,25,.06), 0 10px 24px rgba(19,32,25,.07);
+  --shadow-lift:0 2px 4px rgba(19,32,25,.08), 0 18px 38px rgba(19,32,25,.12);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--field);
+  color:var(--ink);
+  line-height:1.55;
+  min-height:100vh;
+  /* trame très légère de fiche quadrillée */
+  background-image:linear-gradient(rgba(19,32,25,.035) 1px,transparent 1px);
+  background-size:100% 34px;
+}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:3px}
+::selection{background:#C9E6D6}
+
+.mono{font-family:var(--font-mono)}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
+
+.wrap{
+  max-width:840px;
+  margin:0 auto;
+  padding:calc(18px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right))
+          calc(96px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+}
+
+/* ---------- Barre du haut ---------- */
+.topbar{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  padding:6px 0 22px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand-name{
+  font-family:var(--font-display);
+  font-weight:800;font-stretch:88%;
+  font-size:30px;letter-spacing:-.02em;line-height:1;
+}
+.brand-name .dot{color:var(--go)}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+
+/* ---------- Boutons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 14px;border-radius:8px;
+  border:1.5px solid var(--rule);
+  background:var(--card);
+  font-family:var(--font-mono);font-size:12.5px;font-weight:500;
+  letter-spacing:.04em;text-transform:uppercase;
+  transition:background .15s, border-color .15s, transform .1s;
+}
+.btn:hover{background:var(--card-2);border-color:var(--ink-soft)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.btn-primary:hover{background:#1e3128;border-color:#1e3128}
+.btn-danger{color:var(--stamp);border-color:#E0C2BD}
+.btn-danger:hover{background:#FBEDEB;border-color:var(--stamp)}
+.btn-ghost{border-color:transparent;background:transparent}
+.btn-ghost:hover{background:rgba(19,32,25,.06)}
+.btn-sm{padding:6px 10px;font-size:11.5px}
+
+/* ---------- Vues ---------- */
+.view{display:none;animation:rise .22s ease both}
+.view.active{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Recherche + filtres ---------- */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.search{
+  flex:1 1 220px;min-width:0;
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1.5px solid var(--rule);border-radius:8px;
+  padding:0 12px;
+}
+.search input{
+  flex:1;border:none;background:none;outline:none;
+  padding:10px 0;font-size:15px;min-width:0;
+}
+.search input::placeholder{color:var(--ink-soft);font-family:var(--font-mono);font-size:13px}
+.segmented{display:flex;background:var(--card);border:1.5px solid var(--rule);border-radius:8px;overflow:hidden}
+.segmented button{
+  padding:9px 12px;font-family:var(--font-mono);font-size:11.5px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+  border-right:1px solid var(--rule-soft);
+}
+.segmented button:last-child{border-right:none}
+.segmented button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
+
+.section-label{
+  display:flex;align-items:center;gap:12px;margin:26px 0 12px;
+}
+.section-label::after{content:"";flex:1;height:1px;background:var(--rule)}
+
+/* ---------- Carte tuto ---------- */
+.cards{display:grid;gap:14px}
+.tuto-card{
+  position:relative;
+  background:var(--card);
+  border:1.5px solid var(--rule);
+  border-radius:var(--radius);
+  padding:16px 18px 14px;
+  box-shadow:var(--shadow);
+  text-align:left;width:100%;
+  display:block;
+  transition:transform .14s, box-shadow .14s, border-color .14s;
+}
+.tuto-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift);border-color:var(--ink-soft)}
+.tuto-card .card-top{display:flex;justify-content:space-between;gap:12px;margin-bottom:8px}
+.tuto-card h2{
+  font-family:var(--font-display);font-weight:700;font-stretch:92%;
+  font-size:20px;line-height:1.2;letter-spacing:-.01em;margin-bottom:5px;
+}
+.tuto-card .desc{color:var(--ink-soft);font-size:14.5px;margin-bottom:14px}
+.tuto-card .card-foot{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  margin-top:10px;
+}
+.card-status{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+.card-status.done{color:var(--go);font-weight:500}
+.card-status.now{color:var(--amber);font-weight:500}
+.card-go{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- Jauge segmentée : 1 segment = 1 étape ---------- */
+.gauge{display:flex;gap:2px;height:7px}
+.gauge span{
+  flex:1;background:var(--rule);border-radius:1px;
+  transition:background .25s;
+}
+.gauge span.on{background:var(--go)}
+.gauge span.cur{background:var(--amber)}
+.gauge.bar{gap:0;background:var(--rule);border-radius:2px;overflow:hidden}
+.gauge.bar i{display:block;height:100%;background:var(--go);border-radius:2px}
+
+/* ---------- Vue tuto ---------- */
+.sheet-head{
+  position:sticky;top:0;z-index:20;
+  margin:0 -18px 18px;padding:10px 18px 12px;
+  background:rgba(221,227,219,.92);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--rule);
+}
+.sheet-head .row1{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sheet-head h2{
+  font-family:var(--font-display);font-weight:800;font-stretch:88%;
+  font-size:21px;line-height:1.2;letter-spacing:-.015em;flex:1;min-width:0;
+}
+.sheet-head .row2{display:flex;align-items:center;gap:12px}
+.sheet-head .gauge{flex:1}
+.count{font-family:var(--font-mono);font-size:12.5px;font-weight:500;white-space:nowrap}
+
+.sheet-meta{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px;
+}
+.tag{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--rule);border-radius:999px;padding:3px 9px;color:var(--ink-soft);
+  background:var(--card);
+}
+.sheet-desc{color:var(--ink-soft);font-size:15px;margin-bottom:20px;max-width:62ch}
+
+/* ---------- Étapes ---------- */
+.steps{list-style:none}
+.phase{
+  display:flex;align-items:baseline;gap:12px;
+  margin:26px 0 10px;padding-top:4px;
+}
+.phase:first-child{margin-top:0}
+.phase h3{
+  font-family:var(--font-display);font-weight:700;font-stretch:88%;
+  font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+}
+.phase .pnum{font-family:var(--font-mono);font-size:11px;color:var(--amber);letter-spacing:.1em}
+.phase::after{content:"";flex:1;height:1px;background:var(--rule);align-self:center}
+
+.step{
+  position:relative;
+  display:flex;gap:13px;align-items:flex-start;
+  background:var(--card);
+  border:1.5px solid var(--rule);
+  border-radius:var(--radius);
+  padding:13px 14px;margin-bottom:8px;
+  transition:background .2s, border-color .2s, opacity .2s;
+}
+.step.now{
+  border-color:var(--amber);
+  box-shadow:0 0 0 3px var(--amber-soft);
+  margin-top:16px;
+}
+.step.now::before{
+  content:"À faire maintenant";
+  position:absolute;top:-9px;left:14px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--amber);color:#fff;padding:1px 7px;border-radius:3px;
+}
+.step.checked{background:var(--card-2);border-color:var(--rule-soft)}
+.step.checked .step-text{color:var(--ink-soft)}
+
+.toggle{
+  flex:none;width:26px;height:26px;margin-top:1px;
+  border:2px solid var(--ink-soft);border-radius:5px;
+  background:var(--card);
+  display:grid;place-items:center;
+  transition:background .18s, border-color .18s;
+}
+.toggle:hover{border-color:var(--go)}
+.step.checked .toggle{background:var(--go);border-color:var(--go)}
+.toggle svg{width:16px;height:16px;display:block}
+.toggle path{
+  stroke:#fff;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:22;stroke-dashoffset:22;
+  transition:stroke-dashoffset .22s ease .04s;
+}
+.step.checked .toggle path{stroke-dashoffset:0}
+
+.step-body{flex:1;min-width:0}
+.step-head{display:flex;gap:10px;align-items:baseline}
+.step-num{
+  font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);
+  flex:none;padding-top:1px;
+}
+.step-text{font-size:15.5px;font-weight:500}
+.step-detail{
+  font-size:14px;color:var(--ink-soft);margin-top:5px;padding-left:30px;
+}
+.step-detail a{color:var(--go)}
+.step-detail code{
+  font-family:var(--font-mono);font-size:12.5px;
+  background:var(--card-2);border:1px solid var(--rule-soft);
+  border-radius:4px;padding:1px 4px;
+}
+.step-code{
+  position:relative;margin:9px 0 2px 30px;
+  background:#132019;color:#DDE3DB;border-radius:7px;
+  padding:11px 13px;overflow-x:auto;
+  font-family:var(--font-mono);font-size:12.5px;line-height:1.65;
+}
+.step-code .copy{
+  position:absolute;top:6px;right:6px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:#9FB3A6;border:1px solid #35473C;border-radius:4px;padding:2px 6px;
+}
+.step-code .copy:hover{color:#fff;border-color:#7E9488}
+
+.step-ok{
+  flex:none;align-self:flex-start;margin-top:7px;
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;
+  color:var(--go);opacity:0;transition:opacity .2s;
+}
+.step.checked .step-ok{opacity:1}
+
+/* ---------- Tampon de fin ---------- */
+.finish{
+  margin-top:26px;padding:26px 18px;
+  border:1.5px dashed var(--rule);border-radius:var(--radius);
+  text-align:center;
+}
+.stamp{
+  display:inline-block;transform:rotate(-4deg);
+  border:3px solid var(--stamp);border-radius:6px;
+  color:var(--stamp);padding:6px 18px;
+  font-family:var(--font-display);font-weight:800;font-stretch:88%;
+  font-size:24px;letter-spacing:.16em;text-transform:uppercase;
+  opacity:.85;
+  animation:stampIn .3s cubic-bezier(.2,1.5,.5,1) both;
+}
+@keyframes stampIn{from{transform:rotate(-4deg) scale(1.6);opacity:0}to{transform:rotate(-4deg) scale(1);opacity:.85}}
+.finish p{margin-top:12px;color:var(--ink-soft);font-size:14px}
+.finish .btn{margin-top:14px}
+
+.sheet-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px;padding-top:18px;border-top:1px solid var(--rule)}
+
+/* ---------- Éditeur ---------- */
+.form{display:grid;gap:16px;max-width:100%}
+.field label{display:block;margin-bottom:5px}
+.field input,.field textarea{
+  width:100%;background:var(--card);border:1.5px solid var(--rule);border-radius:8px;
+  padding:10px 12px;font-size:15px;outline:none;resize:vertical;
+}
+.field input:focus,.field textarea:focus{border-color:var(--ink)}
+.field textarea{font-family:var(--font-mono);font-size:13.5px;line-height:1.7}
+.field .hint{font-size:12.5px;color:var(--ink-soft);margin-top:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.syntax{
+  background:var(--card-2);border:1px solid var(--rule);border-radius:8px;
+  padding:12px 14px;font-size:13.5px;
+}
+.syntax h4{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.syntax dl{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;align-items:baseline}
+.syntax dt{font-family:var(--font-mono);font-size:12.5px;color:var(--go);white-space:nowrap}
+.syntax dd{color:var(--ink-soft)}
+.live-count{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-soft)}
+
+/* ---------- Divers ---------- */
+.empty{
+  text-align:center;padding:52px 20px;
+  border:1.5px dashed var(--rule);border-radius:var(--radius);
+}
+.empty h3{font-family:var(--font-display);font-weight:700;font-size:18px;margin-bottom:6px}
+.empty p{color:var(--ink-soft);font-size:14.5px;max-width:44ch;margin:0 auto 16px}
+
+.toast{
+  position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));
+  transform:translate(-50%,20px);
+  background:var(--ink);color:var(--card);
+  font-family:var(--font-mono);font-size:12.5px;
+  padding:10px 16px;border-radius:8px;
+  opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:60;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+.sheet-foot .spacer,.topbar-actions .spacer{flex:1}
+
+@media (max-width:600px){
+  .wrap{padding-left:14px;padding-right:14px}
+  .sheet-head{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
+  .brand-name{font-size:26px}
+  .grid2{grid-template-columns:1fr}
+  .step-detail,.step-code{padding-left:0;margin-left:0}
+  .step-code{margin-left:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-name">Tutos<span class="dot">.</span></span>
+      <span class="eyebrow">on coche, on avance</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-sm" id="btnExport" title="Enregistrer un fichier de sauvegarde">Exporter</button>
+      <button class="btn btn-sm" id="btnImport" title="Charger un fichier de sauvegarde">Importer</button>
+      <button class="btn btn-sm btn-primary" id="btnNew">+ Nouveau tuto</button>
+      <input type="file" id="fileInput" accept="application/json" hidden>
+    </div>
+  </header>
+
+  <!-- ============ Liste ============ -->
+  <section class="view" id="viewList">
+    <div class="toolbar">
+      <div class="search">
+        <span class="eyebrow">↳</span>
+        <input type="search" id="q" placeholder="Chercher un tuto" aria-label="Chercher un tuto">
+      </div>
+      <div class="segmented" id="filters" role="group" aria-label="Filtrer">
+        <button data-filter="all" aria-pressed="true">Tous</button>
+        <button data-filter="doing" aria-pressed="false">En cours</button>
+        <button data-filter="todo" aria-pressed="false">À faire</button>
+        <button data-filter="done" aria-pressed="false">Terminés</button>
+      </div>
+    </div>
+    <div id="listBody"></div>
+  </section>
+
+  <!-- ============ Un tuto ============ -->
+  <section class="view" id="viewTuto">
+    <div class="sheet-head">
+      <div class="row1">
+        <button class="btn btn-sm btn-ghost" id="btnBack">← Tous les tutos</button>
+      </div>
+      <div class="row1">
+        <h2 id="tutoTitle"></h2>
+      </div>
+      <div class="row2">
+        <div class="gauge" id="tutoGauge"></div>
+        <span class="count" id="tutoCount"></span>
+      </div>
+    </div>
+    <div class="sheet-meta" id="tutoMeta"></div>
+    <p class="sheet-desc" id="tutoDesc"></p>
+    <ol class="steps" id="tutoSteps"></ol>
+    <div id="tutoFinish"></div>
+    <div class="sheet-foot" id="tutoActions"></div>
+  </section>
+
+  <!-- ============ Éditeur ============ -->
+  <section class="view" id="viewEdit">
+    <div class="sheet-head">
+      <div class="row1">
+        <button class="btn btn-sm btn-ghost" id="btnCancel">← Annuler</button>
+      </div>
+      <div class="row1"><h2 id="editTitle">Nouveau tuto</h2></div>
+    </div>
+    <form class="form" id="editForm" autocomplete="off">
+      <div class="field">
+        <label class="eyebrow" for="fTitle">Titre</label>
+        <input id="fTitle" required placeholder="Publier une app sur GitHub Pages">
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label class="eyebrow" for="fCat">Catégorie</label>
+          <input id="fCat" list="catList" placeholder="Mise en ligne">
+          <datalist id="catList"></datalist>
+        </div>
+        <div class="field">
+          <label class="eyebrow" for="fTime">Durée estimée</label>
+          <input id="fTime" placeholder="20 min">
+        </div>
+      </div>
+      <div class="field">
+        <label class="eyebrow" for="fDesc">Description</label>
+        <input id="fDesc" placeholder="À quoi sert ce tuto, en une phrase.">
+      </div>
+      <div class="field">
+        <label class="eyebrow" for="fSteps">Étapes</label>
+        <textarea id="fSteps" rows="16" spellcheck="false" placeholder="## Préparer le dossier&#10;Créer le dossier du projet&#10;  Un nom court, sans accent ni espace.&#10;Ouvrir un terminal dedans&#10;```&#10;git init&#10;```"></textarea>
+        <div class="hint"><span class="live-count" id="liveCount">0 étape</span></div>
+      </div>
+      <div class="syntax">
+        <h4>Comment écrire les étapes</h4>
+        <dl>
+          <dt>Une ligne</dt><dd>= une étape à cocher.</dd>
+          <dt>## Titre</dt><dd>= une phase, pour regrouper les étapes.</dd>
+          <dt>&nbsp;&nbsp;deux espaces</dt><dd>= une précision rattachée à l'étape du dessus.</dd>
+          <dt>``` … ```</dt><dd>= un bloc de commande, copiable en un clic.</dd>
+          <dt>`texte`</dt><dd>= du code au fil du texte.</dd>
+        </dl>
+      </div>
+      <div class="sheet-foot">
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button type="button" class="btn" id="btnCancel2">Annuler</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-danger" id="btnDelete" hidden>Supprimer</button>
+      </div>
+    </form>
+  </section>
+
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ===================================================================
+   Stockage
+   =================================================================== */
+const LS_CUSTOM = "tutos.v1.custom";
+const LS_PROG   = "tutos.v1.progress";
+
+function load(key, fallback){
+  try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch(e){ return fallback; }
+}
+function save(key, value){
+  try{ localStorage.setItem(key, JSON.stringify(value)); }
+  catch(e){ toast("Impossible d'enregistrer : mémoire du navigateur pleine."); }
+}
+
+let custom   = load(LS_CUSTOM, []);
+let progress = load(LS_PROG, {});   // { tutoId: { done:{key:1}, finishedAt:"2026-07-29" } }
+
+/* ===================================================================
+   Analyse du texte des étapes
+   Une ligne = une étape. "## " = phase. Indentation = précision.
+   ``` = bloc de commande rattaché à l'étape du dessus.
+   =================================================================== */
+function parseSteps(src){
+  const lines = String(src || "").replace(/\r/g, "").split("\n");
+  const items = [];
+  let inCode = false, codeBuf = [];
+
+  const lastStep = () => {
+    for(let i = items.length - 1; i >= 0; i--) if(items[i].type === "step") return items[i];
+    return null;
+  };
+
+  for(const raw of lines){
+    if(/^\s*```/.test(raw)){
+      if(inCode){
+        const s = lastStep();
+        if(s) s.code = codeBuf.join("\n").replace(/\s+$/, "");
+        codeBuf = []; inCode = false;
+      } else inCode = true;
+      continue;
+    }
+    if(inCode){ codeBuf.push(raw); continue; }
+
+    if(!raw.trim()) continue;
+
+    if(/^\s*##\s*/.test(raw)){
+      items.push({ type:"phase", text: raw.replace(/^\s*##\s*/, "").trim() });
+      continue;
+    }
+    if(/^(\t| {2,})/.test(raw)){
+      const s = lastStep();
+      const txt = raw.trim();
+      if(s) s.detail = s.detail ? s.detail + " " + txt : txt;
+      else items.push({ type:"step", text: txt });
+      continue;
+    }
+    items.push({ type:"step", text: raw.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, "").trim() });
+  }
+  if(inCode && codeBuf.length){
+    const s = lastStep();
+    if(s) s.code = codeBuf.join("\n").replace(/\s+$/, "");
+  }
+  return items;
+}
+
+/* Clé de progression stable : dérivée du texte, pas de la position.
+   Réordonner ou insérer une étape ne fait donc pas perdre les coches. */
+function hash32(str){
+  let h = 5381;
+  for(let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+function withKeys(items){
+  const seen = Object.create(null);
+  let n = 0, phase = 0;
+  return items.map(it => {
+    if(it.type === "phase") return Object.assign({}, it, { index: ++phase });
+    const base = hash32(it.text);
+    seen[base] = (seen[base] || 0) + 1;
+    return Object.assign({}, it, { key: base + "-" + seen[base], index: ++n });
+  });
+}
+
+/* ===================================================================
+   Tutos livrés avec l'app
+   =================================================================== */
+const BUILTIN = [
+{
+  id:"b-pages", cat:"Mise en ligne", time:"15 min",
+  title:"Publier une app sur GitHub Pages",
+  desc:"Passer d'un dossier sur le bureau à une adresse web que tu peux ouvrir depuis l'iPad.",
+  steps:`## Préparer le dossier
+Vérifier que le fichier d'accueil s'appelle bien index.html
+  GitHub Pages ne sert que ce nom-là à la racine du site.
+Ouvrir un terminal dans le dossier de l'app
+Initialiser le dépôt et faire le premier commit
+\`\`\`
+git init
+git add .
+git commit -m "Première version"
+\`\`\`
+## Créer le dépôt sur GitHub
+Créer un dépôt vide sur github.com, sans README ni licence
+  Un dépôt vide évite d'avoir à fusionner deux historiques au premier envoi.
+Copier l'adresse du dépôt proposée par GitHub
+Relier le dossier local au dépôt et envoyer le code
+\`\`\`
+git remote add origin <adresse-du-depot>
+git branch -M main
+git push -u origin main
+\`\`\`
+## Activer la publication
+Ouvrir Settings puis Pages dans le dépôt
+Choisir la branche main et le dossier racine, puis valider
+Attendre la fin du déploiement dans l'onglet Actions
+  Compte deux à trois minutes pour la toute première mise en ligne.
+Ouvrir l'adresse publiée et vérifier la page
+  Elle ressemble à https://<pseudo>.github.io/<depot>/
+## Vérifier avant de partager
+Recharger en vidant le cache pour voir la vraie version en ligne
+Tester l'adresse sur le téléphone ou l'iPad
+Noter l'adresse quelque part pour la retrouver`
+},
+{
+  id:"b-pwa", cat:"Mobile", time:"20 min",
+  title:"Rendre une app installable sur iPad",
+  desc:"Ajouter le manifeste et les icônes pour que l'app s'ouvre en plein écran depuis l'écran d'accueil.",
+  steps:`## Les fichiers à ajouter
+Créer manifest.json à côté de index.html
+\`\`\`
+{
+  "name": "Mon app",
+  "short_name": "Mon app",
+  "lang": "fr",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+\`\`\`
+Préparer une icône carrée en 192 et 512 pixels
+  Sans transparence et sans texte fin : iOS l'affiche en tout petit.
+Ajouter apple-touch-icon.png en 180 pixels
+  iOS ignore le manifeste pour l'icône de l'écran d'accueil et prend ce fichier.
+## Les balises dans index.html
+Relier le manifeste dans le head
+\`\`\`
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+\`\`\`
+Ajouter les balises iOS du mode plein écran
+\`\`\`
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mon app">
+<meta name="theme-color" content="#FFFFFF">
+\`\`\`
+Étendre le viewport sous l'encoche
+\`\`\`
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+\`\`\`
+Réserver la place des barres système en CSS
+  Utilise env(safe-area-inset-top) et env(safe-area-inset-bottom) dans les marges du conteneur principal.
+## Installer et vérifier
+Publier la nouvelle version en ligne
+Ouvrir l'adresse dans Safari sur l'iPad
+Toucher Partager puis Sur l'écran d'accueil
+Lancer l'app depuis l'icône et vérifier qu'il n'y a plus de barre d'adresse
+Vérifier que le contenu ne passe pas sous l'heure ni sous la barre du bas`
+},
+{
+  id:"b-projet", cat:"Méthode", time:"10 min",
+  title:"Démarrer un nouveau projet proprement",
+  desc:"Les quelques minutes de cadrage qui évitent de tout refaire au bout de deux jours.",
+  steps:`## Cadrer
+Écrire en une phrase ce que l'app doit faire
+  Si la phrase a besoin d'un « et », c'est peut-être deux apps.
+Nommer la personne qui va s'en servir et sur quel appareil
+Lister les trois choses qu'elle doit pouvoir faire dès la première version
+Écrire ce que l'app ne fera pas
+  C'est cette liste-là qui protège du projet qui gonfle.
+## Poser le décor
+Créer le dossier dans mes-apps avec un nom court
+Créer index.html avec un titre et un paragraphe
+Ouvrir la page dans le navigateur pour vérifier le chemin
+Faire un premier commit avant d'écrire la moindre fonctionnalité
+## Construire la première version
+Faire marcher le parcours principal de bout en bout, même moche
+Utiliser des vraies données dès le début, pas du « Lorem ipsum »
+S'arrêter dès que les trois choses de la liste fonctionnent
+Relire l'app sur téléphone avant de la montrer
+## Ranger
+Écrire dans le README à quoi sert l'app et comment la lancer
+Publier la version en ligne
+Noter la prochaine idée dans le README plutôt que de la coder tout de suite`
+},
+{
+  id:"b-sauvegarde", cat:"Entretien", time:"10 min",
+  title:"Sauvegarder ses apps et ses données",
+  desc:"Un tour à faire une fois par mois pour ne rien perdre d'irremplaçable.",
+  steps:`## Le code
+Vérifier qu'aucun dossier n'a de modifications non envoyées
+\`\`\`
+cd ~/Bureau/mes-apps
+for d in */; do (cd "$d" && git status --porcelain -b 2>/dev/null | head -1 | sed "s|^|$d |"); done
+\`\`\`
+Envoyer les commits en attente sur GitHub
+Repérer les dossiers qui ne sont pas encore des dépôts git
+## Les données des apps
+Ouvrir chaque app et utiliser son bouton Exporter
+  Les données rangées dans le navigateur disparaissent si tu effaces l'historique du site.
+Ranger les fichiers exportés dans un dossier daté
+Vérifier qu'un fichier exporté se réimporte bien
+  Une sauvegarde jamais testée n'est pas une sauvegarde.
+## La copie hors machine
+Copier le dossier de sauvegardes sur un disque externe ou dans le nuage
+Vérifier la date du dernier fichier copié
+Noter la date de ce tour dans le calendrier pour le mois prochain`
+}
+];
+
+/* ===================================================================
+   Modèle
+   =================================================================== */
+function allTutos(){
+  return BUILTIN.map(t => Object.assign({}, t, { builtin:true })).concat(custom);
+}
+function getTuto(id){ return allTutos().find(t => t.id === id) || null; }
+
+function stepsOf(tuto){ return withKeys(parseSteps(tuto.steps)); }
+
+function stateOf(tuto){
+  const items = stepsOf(tuto);
+  const steps = items.filter(i => i.type === "step");
+  const done  = (progress[tuto.id] && progress[tuto.id].done) || {};
+  const doneCount = steps.filter(s => done[s.key]).length;
+  const current = steps.find(s => !done[s.key]) || null;
+  return { items, steps, done, doneCount, total: steps.length, current,
+           finishedAt: progress[tuto.id] && progress[tuto.id].finishedAt };
+}
+
+function setDone(tutoId, key, value, total, doneCount){
+  const p = progress[tutoId] || (progress[tutoId] = { done:{} });
+  if(!p.done) p.done = {};
+  if(value) p.done[key] = 1; else delete p.done[key];
+  if(total > 0 && doneCount === total) p.finishedAt = todayISO();
+  else delete p.finishedAt;
+  save(LS_PROG, progress);
+}
+function resetProgress(tutoId){
+  delete progress[tutoId];
+  save(LS_PROG, progress);
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function frDate(iso){
+  if(!iso) return "";
+  const [y,m,d] = iso.split("-");
+  return d + "/" + m + "/" + y;
+}
+
+/* ===================================================================
+   Rendu — helpers
+   =================================================================== */
+const $ = sel => document.querySelector(sel);
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+/* Texte enrichi minimal : `code` et liens cliquables. */
+function rich(s){
+  let out = esc(s);
+  out = out.replace(/`([^`]+)`/g, (m, c) => "<code>" + c + "</code>");
+  out = out.replace(/(https?:\/\/[^\s<)]+)/g, u => '<a href="' + u + '" target="_blank" rel="noopener">' + u + "</a>");
+  return out;
+}
+function gaugeHTML(doneCount, total, currentIndex){
+  if(total === 0) return '<div class="gauge"></div>';
+  if(total > 30){
+    const pct = Math.round(doneCount / total * 100);
+    return '<div class="gauge bar"><i style="width:' + pct + '%"></i></div>';
+  }
+  let html = '<div class="gauge">';
+  for(let i = 1; i <= total; i++){
+    const cls = i <= doneCount ? "on" : (i === currentIndex ? "cur" : "");
+    html += '<span class="' + cls + '"></span>';
+  }
+  return html + "</div>";
+}
+let toastTimer;
+function toast(msg){
+  const el = $("#toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+/* ===================================================================
+   Vue liste
+   =================================================================== */
+let filter = "all";
+let query  = "";
+
+function renderList(){
+  const body = $("#listBody");
+  const tutos = allTutos().map(t => ({ t, s: stateOf(t) }));
+
+  const q = query.trim().toLowerCase();
+  let shown = tutos.filter(({ t, s }) => {
+    if(q){
+      const hay = (t.title + " " + (t.desc||"") + " " + (t.cat||"") + " " + t.steps).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    if(filter === "done")  return s.total > 0 && s.doneCount === s.total;
+    if(filter === "doing") return s.doneCount > 0 && s.doneCount < s.total;
+    if(filter === "todo")  return s.doneCount === 0;
+    return true;
+  });
+
+  if(!shown.length){
+    body.innerHTML = '<div class="empty">' +
+      (q ? "<h3>Rien ne correspond</h3><p>Aucun tuto ne contient « " + esc(query) + " ».</p>"
+         : "<h3>Rien dans cette liste</h3><p>Crée une checklist : chaque ligne que tu écris devient une étape à cocher.</p>") +
+      '<button class="btn btn-primary" data-act="new">+ Nouveau tuto</button></div>';
+    return;
+  }
+
+  /* Regroupé par catégorie : la catégorie porte une information, pas une décoration. */
+  const groups = new Map();
+  shown.forEach(item => {
+    const cat = item.t.cat || "Sans catégorie";
+    if(!groups.has(cat)) groups.set(cat, []);
+    groups.get(cat).push(item);
+  });
+
+  let html = "";
+  for(const [cat, items] of groups){
+    html += '<div class="section-label"><span class="eyebrow">' + esc(cat) + " · " + items.length + "</span></div>";
+    html += '<div class="cards">';
+    for(const { t, s } of items){
+      const complete = s.total > 0 && s.doneCount === s.total;
+      let status, statusCls = "";
+      if(complete){ status = "Terminé le " + frDate(s.finishedAt || todayISO()); statusCls = "done"; }
+      else if(s.doneCount > 0){
+        status = s.doneCount + " étape" + (s.doneCount > 1 ? "s" : "") + " sur " + s.total + " " +
+                 (s.doneCount > 1 ? "faites" : "faite");
+        statusCls = "now";
+      }
+      else status = "Pas encore commencé";
+
+      const size = s.total + " étape" + (s.total > 1 ? "s" : "") + (t.time ? " · " + t.time : "");
+      html += '<button class="tuto-card" data-open="' + esc(t.id) + '">' +
+        '<div class="card-top"><span class="eyebrow">' + esc(size) + "</span>" +
+        '<span class="eyebrow">' + (t.builtin ? "fourni" : "à moi") + "</span></div>" +
+        "<h2>" + esc(t.title) + "</h2>" +
+        (t.desc ? '<p class="desc">' + esc(t.desc) + "</p>" : "") +
+        gaugeHTML(s.doneCount, s.total, s.current ? s.current.index : 0) +
+        '<div class="card-foot"><span class="card-status ' + statusCls + '">' + esc(status) + "</span>" +
+        '<span class="card-go">' + (complete ? "Revoir →" : s.doneCount ? "Reprendre →" : "Ouvrir →") + "</span></div>" +
+        "</button>";
+    }
+    html += "</div>";
+  }
+  body.innerHTML = html;
+}
+
+/* ===================================================================
+   Vue tuto
+   =================================================================== */
+let openId = null;
+
+function renderTuto(id){
+  const t = getTuto(id);
+  if(!t){ go("#/"); return; }
+  openId = id;
+  const s = stateOf(t);
+
+  $("#tutoTitle").textContent = t.title;
+  $("#tutoCount").textContent = s.doneCount + " / " + s.total;
+  $("#tutoGauge").outerHTML = gaugeHTML(s.doneCount, s.total, s.current ? s.current.index : 0)
+    .replace('class="gauge', 'id="tutoGauge" class="gauge');
+  $("#tutoDesc").textContent = t.desc || "";
+  $("#tutoDesc").hidden = !t.desc;
+
+  $("#tutoMeta").innerHTML =
+    (t.cat ? '<span class="tag">' + esc(t.cat) + "</span>" : "") +
+    (t.time ? '<span class="tag">' + esc(t.time) + "</span>" : "") +
+    '<span class="tag">' + s.total + " étape" + (s.total > 1 ? "s" : "") + "</span>";
+
+  let html = "";
+  for(const it of s.items){
+    if(it.type === "phase"){
+      html += '<li class="phase"><span class="pnum">Phase ' + String(it.index).padStart(2,"0") + "</span>" +
+              "<h3>" + esc(it.text) + "</h3></li>";
+      continue;
+    }
+    const checked = !!s.done[it.key];
+    const isNow = !checked && s.current && s.current.key === it.key;
+    html += '<li class="step' + (checked ? " checked" : "") + (isNow ? " now" : "") + '" data-key="' + it.key + '">' +
+      '<button class="toggle" role="checkbox" aria-checked="' + checked + '" aria-label="Étape ' + it.index + ' : ' + esc(it.text) + '">' +
+        '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>' +
+      "</button>" +
+      '<div class="step-body">' +
+        '<div class="step-head"><span class="step-num">' + String(it.index).padStart(2,"0") + "</span>" +
+        '<span class="step-text">' + rich(it.text) + "</span></div>" +
+        (it.detail ? '<p class="step-detail">' + rich(it.detail) + "</p>" : "") +
+        (it.code ? '<pre class="step-code"><button class="copy" type="button">Copier</button><code>' + esc(it.code) + "</code></pre>" : "") +
+      "</div>" +
+      '<span class="step-ok">OK</span>' +
+    "</li>";
+  }
+  $("#tutoSteps").innerHTML = html;
+
+  const complete = s.total > 0 && s.doneCount === s.total;
+  $("#tutoFinish").innerHTML = complete
+    ? '<div class="finish"><div class="stamp">Terminé</div>' +
+      "<p>Checklist bouclée le " + frDate(s.finishedAt || todayISO()) + ". " +
+      "Les coches restent, tu peux revenir la relire quand tu veux.</p>" +
+      '<button class="btn" data-act="reset">Tout décocher pour recommencer</button></div>'
+    : "";
+
+  renderActions(t, s);
+}
+
+function renderActions(t, s){
+  const complete = s.total > 0 && s.doneCount === s.total;
+  $("#tutoActions").innerHTML =
+    (s.doneCount > 0 && !complete ? '<button class="btn" data-act="reset">Tout décocher</button>' : "") +
+    (t.builtin
+      ? '<button class="btn" data-act="dup">Dupliquer pour modifier</button>'
+      : '<button class="btn" data-act="edit">Modifier</button>') +
+    '<span class="spacer"></span>' +
+    (t.builtin ? "" : '<button class="btn btn-danger" data-act="del">Supprimer ce tuto</button>');
+}
+
+/* Met à jour l'entête et les marqueurs sans reconstruire toute la liste :
+   la coche reste fluide même sur un tuto de cinquante étapes. */
+function refreshTutoChrome(){
+  const t = getTuto(openId);
+  if(!t) return;
+  const s = stateOf(t);
+  $("#tutoCount").textContent = s.doneCount + " / " + s.total;
+  const g = $("#tutoGauge");
+  const fresh = document.createElement("div");
+  fresh.innerHTML = gaugeHTML(s.doneCount, s.total, s.current ? s.current.index : 0);
+  const node = fresh.firstChild;
+  node.id = "tutoGauge";
+  g.replaceWith(node);
+
+  document.querySelectorAll("#tutoSteps .step").forEach(li => {
+    li.classList.toggle("now", !!(s.current && s.current.key === li.dataset.key));
+  });
+
+  const complete = s.total > 0 && s.doneCount === s.total;
+  const hadFinish = !!$("#tutoFinish").firstChild;
+  if(complete !== hadFinish) renderTuto(openId);
+  else renderActions(t, s);
+}
+
+/* ===================================================================
+   Éditeur
+   =================================================================== */
+let editingId = null;
+
+function openEditor(id, seed){
+  editingId = id || null;
+  const t = id ? getTuto(id) : (seed || null);
+  $("#editTitle").textContent = id ? "Modifier le tuto" : "Nouveau tuto";
+  $("#fTitle").value = t ? t.title : "";
+  $("#fCat").value   = t ? (t.cat || "") : "";
+  $("#fTime").value  = t ? (t.time || "") : "";
+  $("#fDesc").value  = t ? (t.desc || "") : "";
+  $("#fSteps").value = t ? t.steps : "";
+  $("#btnDelete").hidden = !id;
+
+  const cats = [...new Set(allTutos().map(x => x.cat).filter(Boolean))];
+  $("#catList").innerHTML = cats.map(c => '<option value="' + esc(c) + '">').join("");
+  updateLiveCount();
+  setTimeout(() => $("#fTitle").focus(), 40);
+}
+
+function updateLiveCount(){
+  const items = parseSteps($("#fSteps").value);
+  const n = items.filter(i => i.type === "step").length;
+  const p = items.filter(i => i.type === "phase").length;
+  $("#liveCount").textContent =
+    n + " étape" + (n > 1 ? "s" : "") + (p ? " · " + p + " phase" + (p > 1 ? "s" : "") : "");
+}
+
+function saveEditor(e){
+  e.preventDefault();
+  const title = $("#fTitle").value.trim();
+  const steps = $("#fSteps").value;
+  if(!title){ toast("Donne un titre au tuto."); $("#fTitle").focus(); return; }
+  if(!parseSteps(steps).some(i => i.type === "step")){
+    toast("Ajoute au moins une étape."); $("#fSteps").focus(); return;
+  }
+  const data = {
+    title, steps,
+    cat:  $("#fCat").value.trim(),
+    time: $("#fTime").value.trim(),
+    desc: $("#fDesc").value.trim()
+  };
+  let id = editingId;
+  if(id){
+    const i = custom.findIndex(t => t.id === id);
+    if(i < 0){ toast("Ce tuto n'existe plus."); go("#/"); return; }
+    custom[i] = Object.assign(custom[i], data);
+  }else{
+    id = "c-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,6);
+    custom.push(Object.assign({ id }, data));
+  }
+  save(LS_CUSTOM, custom);
+  toast("Tuto enregistré.");
+  go("#/t/" + id);
+}
+
+function deleteTuto(id){
+  const t = getTuto(id);
+  if(!t || t.builtin) return;
+  if(!confirm("Supprimer « " + t.title + " » et sa progression ? C'est définitif.")) return;
+  custom = custom.filter(x => x.id !== id);
+  save(LS_CUSTOM, custom);
+  resetProgress(id);
+  toast("Tuto supprimé.");
+  go("#/");
+}
+
+/* ===================================================================
+   Import / export
+   =================================================================== */
+function exportAll(){
+  const data = { app:"tutos", version:1, exportedAt:new Date().toISOString(), custom, progress };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tutos-" + todayISO() + ".json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast("Sauvegarde enregistrée.");
+}
+
+function importFile(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try{ data = JSON.parse(reader.result); }
+    catch(err){ toast("Ce fichier n'est pas une sauvegarde Tutos."); return; }
+    if(!data || data.app !== "tutos" || !Array.isArray(data.custom)){
+      toast("Ce fichier n'est pas une sauvegarde Tutos."); return;
+    }
+    let added = 0, merged = 0;
+    data.custom.forEach(t => {
+      if(!t || !t.id || !t.title) return;
+      const i = custom.findIndex(x => x.id === t.id);
+      if(i >= 0){ custom[i] = t; merged++; } else { custom.push(t); added++; }
+    });
+    if(data.progress && typeof data.progress === "object"){
+      Object.keys(data.progress).forEach(k => {
+        const incoming = data.progress[k] || {};
+        const here = progress[k] || { done:{} };
+        progress[k] = { done: Object.assign({}, here.done, incoming.done || {}),
+                        finishedAt: incoming.finishedAt || here.finishedAt };
+        if(!progress[k].finishedAt) delete progress[k].finishedAt;
+      });
+    }
+    save(LS_CUSTOM, custom);
+    save(LS_PROG, progress);
+    renderList();
+    toast(added + " tuto" + (added > 1 ? "s" : "") + " ajouté" + (added > 1 ? "s" : "") +
+          (merged ? ", " + merged + " mis à jour" : "") + ".");
+  };
+  reader.readAsText(file);
+}
+
+/* ===================================================================
+   Navigation
+   =================================================================== */
+function go(hash){
+  if(location.hash === hash) route();
+  else location.hash = hash;
+}
+function show(viewId){
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === viewId));
+}
+function route(){
+  const h = location.hash || "#/";
+  const mTuto = h.match(/^#\/t\/(.+)$/);
+  const mEdit = h.match(/^#\/edit\/(.+)$/);
+
+  if(mTuto){
+    show("viewTuto");
+    renderTuto(decodeURIComponent(mTuto[1]));
+    window.scrollTo(0, 0);
+  }else if(h === "#/new"){
+    show("viewEdit");
+    if(!pendingSeed) openEditor(null);
+    else { openEditor(null, pendingSeed); pendingSeed = null; }
+    window.scrollTo(0, 0);
+  }else if(mEdit){
+    show("viewEdit");
+    openEditor(decodeURIComponent(mEdit[1]));
+    window.scrollTo(0, 0);
+  }else{
+    show("viewList");
+    openId = null;
+    renderList();
+    window.scrollTo(0, listScroll);   /* on retrouve la liste là où on l'a laissée */
+  }
+}
+let pendingSeed = null;
+let listScroll = 0;
+
+/* ===================================================================
+   Événements
+   =================================================================== */
+window.addEventListener("hashchange", route);
+
+$("#q").addEventListener("input", e => { query = e.target.value; renderList(); });
+
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest("button[data-filter]");
+  if(!b) return;
+  filter = b.dataset.filter;
+  $("#filters").querySelectorAll("button").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === b)));
+  renderList();
+});
+
+$("#listBody").addEventListener("click", e => {
+  const card = e.target.closest("[data-open]");
+  if(card){ listScroll = window.scrollY; go("#/t/" + encodeURIComponent(card.dataset.open)); return; }
+  if(e.target.closest('[data-act="new"]')) go("#/new");
+});
+
+$("#btnNew").addEventListener("click", () => go("#/new"));
+$("#btnBack").addEventListener("click", () => go("#/"));
+const leaveEditor = () => go(editingId ? "#/t/" + encodeURIComponent(editingId) : "#/");
+$("#btnCancel").addEventListener("click", leaveEditor);
+$("#btnCancel2").addEventListener("click", leaveEditor);
+$("#btnDelete").addEventListener("click", () => { if(editingId) deleteTuto(editingId); });
+$("#editForm").addEventListener("submit", saveEditor);
+$("#fSteps").addEventListener("input", updateLiveCount);
+
+$("#btnExport").addEventListener("click", exportAll);
+$("#btnImport").addEventListener("click", () => $("#fileInput").click());
+$("#fileInput").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if(f) importFile(f);
+  e.target.value = "";
+});
+
+/* Cocher une étape */
+$("#tutoSteps").addEventListener("click", e => {
+  const copy = e.target.closest(".copy");
+  if(copy){
+    const code = copy.parentElement.querySelector("code").textContent;
+    navigator.clipboard.writeText(code)
+      .then(() => { copy.textContent = "Copié"; setTimeout(() => copy.textContent = "Copier", 1400); })
+      .catch(() => toast("La copie a été refusée par le navigateur."));
+    return;
+  }
+  const li = e.target.closest(".step");
+  if(!li) return;
+  if(e.target.closest("a")) return;
+
+  const t = getTuto(openId);
+  if(!t) return;
+  const s = stateOf(t);
+  const key = li.dataset.key;
+  const willCheck = !s.done[key];
+  const newCount = s.doneCount + (willCheck ? 1 : -1);
+
+  setDone(openId, key, willCheck, s.total, newCount);
+  li.classList.toggle("checked", willCheck);
+  li.querySelector(".toggle").setAttribute("aria-checked", String(willCheck));
+  refreshTutoChrome();
+
+  if(willCheck) scrollToNext();
+});
+
+/* Après une coche, amener l'étape suivante sous les yeux si elle est hors champ. */
+function scrollToNext(){
+  const next = document.querySelector("#tutoSteps .step.now");
+  if(!next) return;
+  const r = next.getBoundingClientRect();
+  if(r.bottom > window.innerHeight - 20 || r.top < 90){
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    next.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block:"center" });
+  }
+}
+
+/* Actions du bas de fiche */
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if(!b || !openId) return;
+  const act = b.dataset.act;
+  if(act === "reset"){
+    const t = getTuto(openId);
+    if(!confirm("Décocher toutes les étapes de « " + t.title + " » ?")) return;
+    resetProgress(openId);
+    renderTuto(openId);
+    window.scrollTo({ top:0, behavior:"smooth" });
+    toast("Checklist remise à zéro.");
+  }else if(act === "edit"){
+    go("#/edit/" + encodeURIComponent(openId));
+  }else if(act === "del"){
+    deleteTuto(openId);
+  }else if(act === "dup"){
+    const t = getTuto(openId);
+    pendingSeed = { title: t.title + " (ma version)", cat:t.cat, time:t.time, desc:t.desc, steps:t.steps };
+    go("#/new");
+  }
+});
+
+/* Barre d'espace / Entrée sur une étape au clavier */
+$("#tutoSteps").addEventListener("keydown", e => {
+  if(e.key !== " " && e.key !== "Enter") return;
+  const btn = e.target.closest(".toggle");
+  if(!btn) return;
+  e.preventDefault();
+  btn.click();
+});
+
+route();
+</script>
+</body>
+</html>
