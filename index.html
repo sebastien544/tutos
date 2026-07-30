@@ -1822,6 +1822,150 @@ Produits pour l'argenterie ou pour le four : hors sujet
   Ils sont conçus pour d'autres métaux et d'autres saletés, et laissent des voiles difficiles à retirer.
 Chiffon déjà utilisé pour autre chose : à écarter
   Une microfibre qui a servi à la fonte ou au sol transporte exactement les particules dont on essaie de se débarrasser.`
+},
+{
+  id:"b-disque", cat:"Système", time:"1 h",
+  title:"Changer un disque dur interne",
+  desc:"Choisir le bon disque, ouvrir sans rien casser, et remettre le système en route. Tour ou portable.",
+  variants:[
+{
+  id:"tour", label:"Tour", time:"45 min",
+  steps:`## Vérifier que c'est bien le disque
+Écarter les autres causes avant de démonter quoi que ce soit
+  Un ordinateur lent n'a pas forcément un disque en fin de vie : voir [[Dépanner un ordinateur qui rame]], qui distingue les quatre causes possibles.
+Lire l'état de santé du disque actuel
+\`\`\`
+sudo smartctl -H /dev/sda
+\`\`\`
+  Sous Windows, CrystalDiskInfo donne la même information en clair. Les mentions à retenir : secteurs réalloués, secteurs en attente, et l'état général.
+Écouter le disque s'il est mécanique
+  Cliquetis répétés, grattement rythmé, cycles d'arrêt et de redémarrage : le disque est en train de mourir. On ne diagnostique plus, on copie ce qui peut l'être et on remplace.
+## Choisir le bon disque
+Repérer ce que la carte mère accepte
+  Une tour récente propose du SATA 2,5 ou 3,5 pouces, et un ou deux emplacements M.2 sur la carte mère. Le manuel de la carte mère le dit précisément, et il se trouve en ligne avec la référence imprimée dessus.
+Distinguer M.2 SATA et M.2 NVMe
+  Deux barrettes identiques en apparence, deux technologies différentes. Un NVMe va cinq fois plus vite, à condition que l'emplacement le gère. Le manuel indique le mode de chaque emplacement.
+Vérifier si un emplacement M.2 en désactive un port SATA
+  C'est courant : occuper le M.2 coupe un port SATA. À savoir avant de rebrancher tous les disques.
+Choisir la capacité en pensant à deux ans, pas à demain
+  Le prix au gigaoctet baisse par palier : 1 To est souvent à peine plus cher que 500 Go.
+Prévoir un boîtier USB pour l'ancien disque
+  Il servira de disque de sauvegarde une fois sorti, ou de support de clonage avant l'échange.
+## Sauvegarder, avant de toucher au matériel
+Sauvegarder toutes les données sur un support externe
+  La méthode complète : [[Sauvegarder ses apps et ses données]]. Un disque qu'on démonte est un disque qu'on peut faire tomber.
+Décider entre cloner et réinstaller
+  Cloner garde tout en l'état et prend une heure. Réinstaller repart propre et prend une demi-journée, mais règle au passage des années de résidus. Pour un système Linux neuf, voir [[Installer Linux]].
+Cloner maintenant si c'est le choix retenu
+  Branche le disque neuf dans le boîtier USB et clone dessus avant l'échange : c'est plus simple que l'inverse, et on garde l'ancien disque intact comme filet.
+Noter la clé de récupération BitLocker si le disque Windows est chiffré
+  Sans elle, un système cloné ou un disque déplacé devient inaccessible.
+## Ouvrir la tour
+Éteindre, débrancher le câble d'alimentation, puis maintenir le bouton d'allumage dix secondes
+  Cela vide les condensateurs. L'alimentation garde du courant même éteinte tant qu'elle est branchée.
+Poser la tour sur une table, pas sur un tapis
+Se décharger en touchant une partie métallique non peinte du boîtier
+  Un bracelet antistatique est mieux, mais toucher le châssis avant de manipuler une barrette suffit dans les faits.
+Retirer le panneau latéral gauche
+  Deux vis à l'arrière en général. Le panneau glisse vers l'arrière avant de se soulever.
+Photographier l'intérieur avant de débrancher quoi que ce soit
+## Remplacer le disque
+Repérer le disque système parmi les autres
+  Débranche-le en dernier et note où allait chaque câble. Sur les tours à plusieurs disques, l'erreur classique est de reformater le mauvais.
+Débrancher le câble de données SATA, puis le câble d'alimentation
+  Les connecteurs SATA ont un ergot : on appuie, on ne tire pas de biais.
+Sortir le disque de son berceau
+  Selon le boîtier : quatre vis, un tiroir à clips, ou des glissières sans outil.
+Monter le disque neuf dans le berceau, sans serrer à fond
+Rebrancher les deux câbles jusqu'au clic
+Installer une barrette M.2 s'il s'agit de ce format
+  Vis de fixation retirée, barrette insérée en biais à trente degrés dans son emplacement, puis rabattue à plat et vissée. Elle ne s'enfonce pas droit et ne demande aucune force.
+Retirer le film du dissipateur M.2 s'il y en a un
+Refermer le panneau et rebrancher l'alimentation
+## Remettre en route
+Entrer dans le BIOS et vérifier que le disque neuf est vu
+  S'il n'apparaît pas, c'est un câble, un port désactivé, ou un emplacement M.2 en conflit avec un port SATA.
+Régler l'ordre de démarrage sur le nouveau disque
+Démarrer sur le système cloné, ou installer le système neuf
+Vérifier que TRIM est actif sur un SSD
+\`\`\`
+lsblk --discard
+\`\`\`
+  Une valeur non nulle dans les colonnes DISC signifie que c'est bon. Sous Windows, TRIM est actif par défaut.
+Contrôler la santé du disque neuf et noter la date de l'échange
+Reformater l'ancien disque et le placer dans le boîtier USB
+  Attends d'avoir travaillé une semaine sur le nouveau système avant de l'effacer : c'est ta sauvegarde de secours pendant cette semaine.`
+},
+{
+  id:"portable", label:"Portable", time:"1 h",
+  steps:`## Vérifier que c'est possible, et que c'est bien le disque
+Écarter les autres causes avant de démonter quoi que ce soit
+  Un ordinateur lent n'a pas forcément un disque en fin de vie : voir [[Dépanner un ordinateur qui rame]], qui distingue les quatre causes possibles.
+Vérifier que le disque est remplaçable sur ce modèle
+  Sur beaucoup de portables fins d'après 2016, et sur tous les Mac récents, le stockage est soudé à la carte mère : il n'y a rien à changer. Cherche la référence exacte du modèle suivie de « SSD upgrade » ou de « disassembly ».
+Lire l'état de santé du disque actuel
+\`\`\`
+sudo smartctl -H /dev/sda
+\`\`\`
+  Sous Windows, CrystalDiskInfo donne la même information en clair.
+Trouver la notice de démontage du modèle exact
+  iFixit ou une vidéo de démontage du modèle précis. Dix minutes de lecture évitent une nappe déchirée.
+## Choisir le bon disque
+Identifier le format présent
+  Soit un disque 2,5 pouces SATA, soit une barrette M.2. Les deux existent, parfois les deux emplacements sur la même machine.
+Vérifier l'épaisseur si c'est un 2,5 pouces
+  7 mm ou 9,5 mm. Un disque de 9,5 mm ne rentre pas dans un logement prévu pour 7.
+Vérifier la longueur si c'est une barrette M.2
+  Le format 2280 est le plus courant, mais certains portables n'acceptent que du 2242. Le chiffre est écrit sur la barrette.
+Distinguer M.2 SATA et M.2 NVMe
+  Deux barrettes semblables, deux technologies. Un NVMe n'ira vite que si l'emplacement le gère, et certains portables n'acceptent que du SATA.
+Prévoir un boîtier USB pour l'ancien disque
+## Sauvegarder, avant de toucher au matériel
+Sauvegarder toutes les données sur un support externe
+  La méthode complète : [[Sauvegarder ses apps et ses données]].
+Décider entre cloner et réinstaller
+  Cloner garde tout en l'état. Réinstaller repart propre et règle au passage des années de résidus. Pour un système Linux neuf, voir [[Installer Linux]].
+Cloner maintenant si c'est le choix retenu
+  Le disque neuf dans le boîtier USB, on clone dessus, puis on échange. L'ancien disque reste intact comme filet de sécurité.
+Noter la clé de récupération BitLocker si le disque est chiffré
+Repérer les licences liées à la machine
+  Certains logiciels demandent une réactivation après un changement de disque.
+## Ouvrir le portable
+Éteindre complètement, pas mettre en veille
+  Vérifie que la machine est bien arrêtée : un portable en veille profonde est toujours sous tension.
+Débrancher le secteur et retirer la batterie si elle est amovible
+Maintenir le bouton d'allumage dix secondes après avoir débranché
+Poser la machine sur une surface dure, écran fermé, sur un chiffon propre
+Retirer les vis du panneau inférieur en les rangeant par longueur
+  Une boîte à compartiments, ou du ruban adhésif collé sur une feuille avec un schéma. Les vis d'un portable ne sont presque jamais toutes identiques, et une vis trop longue perce la carte.
+Décoller le panneau avec un médiator plastique, jamais avec un tournevis
+  On commence par un angle et on suit le bord. Le plastique se déforme sans marquer, le métal laisse des traces définitives.
+Débrancher le connecteur de batterie interne en premier
+  C'est la seule façon de couper vraiment l'alimentation de la carte. Un faux contact avec la batterie branchée peut griller un composant.
+Photographier l'intérieur avant de démonter
+## Remplacer le disque
+Repérer le disque et son mode de fixation
+  Un 2,5 pouces est souvent dans un berceau avec une languette de tirage et une nappe. Une barrette M.2 tient par une seule vis.
+Débrancher la nappe du disque 2,5 pouces sans tirer sur les fils
+  On soulève le petit verrou ou on tire sur la languette prévue, jamais sur la nappe elle-même.
+Sortir le disque et transférer le berceau ou les entretoises sur le disque neuf
+Insérer la barrette M.2 en biais, puis la rabattre et la visser
+  Trente degrés environ, elle glisse sans force. La vis se serre juste jusqu'au contact.
+Reposer le pad thermique s'il y en avait un
+Rebrancher le connecteur de batterie, puis reclipser le panneau
+Remettre chaque vis à sa place d'origine, sans forcer
+  C'est le moment où les vis rangées par longueur paient.
+## Remettre en route
+Vérifier dans le BIOS que le disque neuf est vu
+  Si rien n'apparaît, le disque est mal enfoncé ou la nappe mal reclipsée. Sur les portables Intel, vérifie aussi si le contrôleur est en mode RST plutôt qu'AHCI.
+Démarrer sur le système cloné, ou installer le système neuf
+Vérifier la santé du disque neuf et l'activation de TRIM
+Vérifier que le ventilateur, le wifi et le pavé tactile fonctionnent encore
+  Une nappe voisine mal reclipsée se remarque à ce moment-là, pas plus tard.
+Reformater l'ancien disque et le placer dans le boîtier USB
+  Attends une semaine d'usage du nouveau système avant de l'effacer : d'ici là, c'est ta sauvegarde de secours.`
+}
+  ]
 }
 ];
 
