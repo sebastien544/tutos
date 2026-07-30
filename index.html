@@ -1610,6 +1610,108 @@ Vérifier que les codes de double authentification arrivent bien
   Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
 }
   ]
+},
+{
+  id:"b-heic", cat:"Fichiers", time:"5 min",
+  title:"Convertir des photos HEIC en JPG",
+  desc:"Une photo, ou trois cents d'un coup. Et le réglage qui évite d'avoir à le refaire.",
+  variants:[
+{
+  id:"iphone", label:"iPhone et iPad", time:"5 min",
+  steps:`## Comprendre avant de convertir
+Savoir pourquoi la photo est en HEIC
+  C'est le format par défaut de l'iPhone depuis iOS 11. À qualité égale, il pèse moitié moins qu'un JPG. Le problème n'est pas le format, c'est que certains sites et logiciels le refusent encore.
+Garder l'original HEIC après conversion
+  Le JPG perd un peu de qualité à chaque enregistrement, et il pèse le double. Convertis une copie, garde l'original dans Photos.
+Vérifier d'abord si la conversion est vraiment nécessaire
+  WhatsApp, Messenger, Instagram et la plupart des messageries convertissent déjà toutes seules en envoyant. Le besoin réel, c'est plutôt un dépôt de fichiers, une imprimerie ou un vieux logiciel sous Windows.
+## Une seule photo, sans rien installer
+Ouvrir la photo dans Photos, puis Partager
+Choisir Copier la photo
+Ouvrir l'app Fichiers, aller dans un dossier
+Appuyer longuement sur le fond, puis Coller
+  Le fichier collé arrive en JPG. C'est le raccourci le plus rapide pour une photo isolée, sans app ni réglage.
+Vérifier l'extension du fichier obtenu
+  Appui long sur le fichier, puis Infos : le type doit indiquer image JPEG.
+## Plusieurs photos, avec un raccourci à garder
+Ouvrir l'app Raccourcis et créer un nouveau raccourci
+Ajouter l'action Convertir l'image
+  Cherche « convertir » dans la barre de recherche des actions.
+Régler le format sur JPEG
+  En dépliant l'action, un réglage de qualité apparaît. 80 % suffit largement pour un usage courant.
+Ajouter l'action Enregistrer dans l'album photo, ou Enregistrer le fichier
+  Enregistrer le fichier demande où ranger et garde les choses au propre. Enregistrer dans l'album mélange les JPG aux originaux.
+Ouvrir les réglages du raccourci et activer l'affichage dans la feuille de partage
+  L'icône d'information en haut, puis Utiliser avec Partager. C'est ce qui le fait apparaître dans le menu Partager de Photos.
+Nommer le raccourci Convertir en JPG
+Sélectionner autant de photos que voulu dans Photos, Partager, puis le raccourci
+  Il traite la sélection entière d'un coup. C'est là que le raccourci prend tout son sens.
+## Deux autres méthodes utiles
+Passer par Mail pour une conversion sans app
+  Joins la photo à un brouillon : Mail propose une taille (petite, moyenne, grande) et convertit en JPG en réduisant. Pratique en dépannage, mais la photo est recompressée.
+Brancher l'iPhone en USB pour récupérer directement des JPG
+  Réglages, Photos, puis tout en bas Transfert vers Mac ou PC : choisis Automatique. Les photos arrivent converties sur l'ordinateur, sans rien faire de plus.
+## Éviter d'avoir à le refaire
+Régler l'appareil photo pour qu'il produise du JPG dès la prise de vue
+  Réglages, Appareil photo, Formats, puis Le plus compatible. Les nouvelles photos seront en JPG, les anciennes restent en HEIC.
+Accepter ce que ce réglage coûte
+  Les photos prendront environ deux fois plus de place, et les modes les plus récents restent en HEIF de toute façon. À choisir selon l'usage, pas par principe.`
+},
+{
+  id:"mac", label:"Mac", time:"5 min",
+  steps:`## Comprendre avant de convertir
+Savoir pourquoi la photo est en HEIC
+  C'est le format par défaut de l'iPhone depuis iOS 11. À qualité égale, il pèse moitié moins qu'un JPG. Le problème n'est pas le format, c'est que certains sites et logiciels le refusent encore.
+Garder l'original HEIC après conversion
+  Le JPG perd un peu de qualité à chaque enregistrement, et il pèse le double. Travaille sur des copies, dans un dossier à part.
+Faire une copie des fichiers dans un dossier de travail
+  Toutes les méthodes qui suivent peuvent écrire à côté de l'original, mais un dossier dédié évite de mélanger les deux formats.
+## Une ou plusieurs photos avec Aperçu
+Sélectionner les fichiers dans le Finder et les ouvrir avec Aperçu
+Afficher la barre latérale des vignettes si elle est masquée
+  Menu Présentation, Vignettes.
+Tout sélectionner dans la barre latérale
+  Cmd+A dans la barre latérale, pas dans l'image.
+Choisir Fichier, puis Exporter les images sélectionnées
+  L'entrée du menu change de nom selon le nombre d'images sélectionnées : c'est le signe que le traitement par lot est bien actif.
+Cliquer sur Options dans la fenêtre d'enregistrement et choisir le format JPEG
+  Le curseur de qualité apparaît à ce moment-là. Les trois quarts de la course suffisent pour un usage courant.
+## En une commande, pour beaucoup de fichiers
+Ouvrir le Terminal dans le dossier des photos
+  Dans le Finder, clic droit sur le dossier, Services, Nouveau terminal au dossier.
+Convertir un seul fichier
+\`\`\`
+sips -s format jpeg photo.heic --out photo.jpg
+\`\`\`
+  sips est fourni avec macOS : rien à installer.
+Convertir tout le dossier dans un sous-dossier jpg
+\`\`\`
+mkdir -p jpg
+for f in *.heic *.HEIC; do [ -e "$f" ] && sips -s format jpeg -s formatOptions 80 "$f" --out "jpg/\${f%.*}.jpg"; done
+\`\`\`
+  Le 80 est la qualité en pourcentage. Les originaux ne sont pas touchés.
+Vérifier que la date et les données de prise de vue ont suivi
+  sips conserve les informations EXIF, donc la date, l'appareil et la position. C'est ce qui permet aux photos de rester bien rangées après conversion.
+## Un clic droit qui convertit, une fois pour toutes
+Ouvrir Automator et créer une Action rapide
+Régler l'entrée sur Fichiers image, dans le Finder
+Ajouter Copier les éléments du Finder, puis Modifier le type d'images
+  La première action met une copie de côté : sans elle, l'original est remplacé.
+Choisir le type JPEG, puis enregistrer sous le nom Convertir en JPG
+Faire un clic droit sur n'importe quelle photo, Actions rapides, Convertir en JPG
+  Le raccourci est désormais dans le Finder, disponible en permanence.
+## Depuis l'app Photos
+Sélectionner les photos, puis Fichier, Exporter, Exporter les photos
+  Attention à ne pas choisir Exporter l'original non modifié juste en dessous : celui-là ressort le HEIC tel quel.
+Choisir le type JPEG et la qualité, puis exporter
+  Laisse coché l'export des informations de position et des métadonnées si tu veux garder le classement par lieu et par date.
+## Éviter d'avoir à le refaire
+Régler l'iPhone pour qu'il produise du JPG dès la prise de vue
+  Sur l'iPhone : Réglages, Appareil photo, Formats, Le plus compatible. Les nouvelles photos arriveront en JPG sur le Mac.
+Accepter ce que ce réglage coûte
+  Les photos prendront environ deux fois plus de place. À choisir selon l'usage, pas par principe.`
+}
+  ]
 }
 ];
 
