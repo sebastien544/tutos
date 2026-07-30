@@ -339,6 +339,38 @@ button{cursor:pointer;background:none;border:none;touch-action:manipulation;-web
 .finish p{margin-top:12px;color:var(--ink-soft);font-size:14px}
 .finish .btn{margin-top:14px}
 
+/* ---------- Renvois entre tutos ---------- */
+.tuto-link{
+  color:var(--go);text-decoration:none;
+  border-bottom:1px solid rgba(28,122,87,.4);
+  padding-bottom:1px;
+}
+.tuto-link::before{content:"↳ ";opacity:.65}
+.tuto-link:hover{background:var(--go-soft);border-bottom-color:var(--go)}
+.tuto-link.dead{
+  color:var(--ink-soft);border-bottom-style:dotted;cursor:help;
+}
+.tuto-link.dead::before{content:"↳ ";opacity:.4}
+
+.links{
+  margin-top:26px;padding:14px 16px;
+  border:1px solid var(--rule);border-radius:var(--radius);
+  background:var(--card-2);
+}
+.links > .eyebrow{display:block;margin-bottom:10px}
+.links-row{display:flex;gap:12px;align-items:baseline;margin-top:8px;flex-wrap:wrap}
+.links-dir{
+  font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);
+  min-width:96px;flex:none;
+}
+.links-chips{display:flex;gap:8px;flex-wrap:wrap;flex:1}
+.link-chip{
+  font-size:13.5px;text-decoration:none;color:var(--ink);
+  background:var(--card);border:1px solid var(--rule);border-radius:999px;
+  padding:4px 12px;transition:border-color .15s, background .15s;
+}
+.link-chip:hover{border-color:var(--go);background:var(--go-soft)}
+
 .sheet-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px;padding-top:18px;border-top:1px solid var(--rule)}
 
 /* ---------- Éditeur ---------- */
@@ -448,6 +480,7 @@ button{cursor:pointer;background:none;border:none;touch-action:manipulation;-web
     <div class="variants" id="tutoVariants" hidden></div>
     <ol class="steps" id="tutoSteps"></ol>
     <div id="tutoFinish"></div>
+    <div class="links" id="tutoLinks" hidden></div>
     <div class="sheet-foot" id="tutoActions"></div>
   </section>
 
@@ -492,6 +525,7 @@ button{cursor:pointer;background:none;border:none;touch-action:manipulation;-web
           <dt>&nbsp;&nbsp;deux espaces</dt><dd>= une précision rattachée à l'étape du dessus.</dd>
           <dt>``` … ```</dt><dd>= un bloc de commande, copiable en un clic.</dd>
           <dt>`texte`</dt><dd>= du code au fil du texte.</dd>
+          <dt>[[titre]]</dt><dd>= un renvoi vers un autre tuto, par son titre.</dd>
         </dl>
       </div>
       <div class="sheet-foot">
@@ -634,7 +668,9 @@ Ouvrir l'adresse publiée et vérifier la page
 ## Vérifier avant de partager
 Recharger en vidant le cache pour voir la vraie version en ligne
 Tester l'adresse sur le téléphone ou l'iPad
-Noter l'adresse quelque part pour la retrouver`
+Noter l'adresse quelque part pour la retrouver
+Envisager de la rendre installable sur l'écran d'accueil
+  C'est le sujet de [[Rendre une app installable sur iPad]].`
 },
 {
   id:"b-pwa", cat:"Mobile", time:"20 min",
@@ -681,6 +717,7 @@ Réserver la place des barres système en CSS
   Utilise env(safe-area-inset-top) et env(safe-area-inset-bottom) dans les marges du conteneur principal.
 ## Installer et vérifier
 Publier la nouvelle version en ligne
+  Voir [[Publier une app sur GitHub Pages]] : le manifeste et les icônes ne sont pris en compte qu'en http(s).
 Ouvrir l'adresse dans Safari sur l'iPad
 Toucher Partager puis Sur l'écran d'accueil
 Lancer l'app depuis l'icône et vérifier qu'il n'y a plus de barre d'adresse
@@ -710,6 +747,7 @@ Relire l'app sur téléphone avant de la montrer
 ## Ranger
 Écrire dans le README à quoi sert l'app et comment la lancer
 Publier la version en ligne
+  [[Publier une app sur GitHub Pages]], puis [[Rendre une app installable sur iPad]] si elle doit vivre sur l'écran d'accueil.
 Noter la prochaine idée dans le README plutôt que de la coder tout de suite`
 },
 {
@@ -724,6 +762,7 @@ for d in */; do (cd "$d" && git status --porcelain -b 2>/dev/null | head -1 | se
 \`\`\`
 Envoyer les commits en attente sur GitHub
 Repérer les dossiers qui ne sont pas encore des dépôts git
+  Pour en faire un dépôt publié, voir [[Publier une app sur GitHub Pages]].
 ## Les données des apps
 Ouvrir chaque app et utiliser son bouton Exporter
   Les données rangées dans le navigateur disparaissent si tu effaces l'historique du site.
@@ -815,7 +854,7 @@ Faire le ménage dans les applications au démarrage
 Couper les effets visuels du bureau
   Sur une machine fatiguée, c'est le réglage qui se sent le plus tout de suite.
 Compter les onglets et les extensions du navigateur
-  Chaque onglet est un programme à part entière, chaque extension aussi.
+  Chaque onglet est un programme à part entière, chaque extension aussi. Un cache saturé n'aide pas : [[Vider le cache et supprimer les cookies]].
 Installer les mises à jour en attente, puis redémarrer
 ## Vérifier le matériel
 Chercher les erreurs matérielles du dernier démarrage
@@ -892,7 +931,7 @@ Couper les applications en arrière-plan inutiles
 Désactiver les animations
   Paramètres → Accessibilité → Effets visuels, ou \`sysdm.cpl\` → Paramètres système avancés → Performances → Ajuster afin d'obtenir les meilleures performances.
 Compter les onglets et les extensions du navigateur
-  Chaque onglet est un programme à part entière, chaque extension aussi.
+  Chaque onglet est un programme à part entière, chaque extension aussi. Un cache saturé n'aide pas : [[Vider le cache et supprimer les cookies]].
 Redémarrer et comparer le temps de démarrage
 ## Mettre à jour et réparer
 Installer les mises à jour Windows en attente, puis redémarrer
@@ -969,7 +1008,7 @@ Faire le ménage dans les ouvertures automatiques
 Réduire les animations et la transparence
   Réglages Système → Accessibilité → Moniteur → Réduire les animations et Réduire la transparence.
 Compter les onglets et les extensions du navigateur
-  Chaque onglet est un programme à part entière, chaque extension aussi.
+  Chaque onglet est un programme à part entière, chaque extension aussi. Un cache saturé n'aide pas : [[Vider le cache et supprimer les cookies]].
 Prendre l'habitude de quitter les applications au lieu de les empiler
   Un point sous l'icône du Dock veut dire que l'application tourne encore, même sans fenêtre ouverte.
 Redémarrer et comparer
@@ -1197,7 +1236,7 @@ file image.iso
   Une archive renommée en .iso ne se monte pas. Un fichier bin ou nrg non plus, il faut le convertir d'abord.
 Retélécharger si la somme de contrôle ne correspond pas
 Si le but est de démarrer l'ordinateur dessus, ne pas monter mais écrire l'image sur une clé
-  Ventoy ou le Créateur de disque de démarrage font ça sans risque. La commande dd fonctionne aussi mais efface le disque désigné sans aucun avertissement : vérifie deux fois le nom donné par lsblk avant de la lancer.`
+  C'est le sujet de [[Installer Linux]]. Ventoy ou le Créateur de disque de démarrage font ça sans risque. La commande dd fonctionne aussi mais efface le disque désigné sans aucun avertissement : vérifie deux fois le nom donné par lsblk avant de la lancer.`
 },
 {
   id:"windows", label:"Windows", time:"5 min",
@@ -1242,7 +1281,7 @@ Vérifier que le fichier n'est ni compressé ni chiffré à l'emplacement où il
 Vérifier que c'est bien une image disque et pas une archive renommée
 Retélécharger si la somme de contrôle ne correspond pas
 Si le but est de démarrer l'ordinateur dessus, ne pas monter mais écrire l'image sur une clé
-  Rufus ou Ventoy font ça en quelques clics. Attention : l'opération efface entièrement la clé choisie.`
+  C'est le sujet de [[Installer Linux]]. Rufus ou Ventoy font ça en quelques clics. Attention : l'opération efface entièrement la clé choisie.`
 },
 {
   id:"mac", label:"macOS", time:"5 min",
@@ -1298,7 +1337,7 @@ file image.iso
 \`\`\`
 Retélécharger si la somme de contrôle ne correspond pas
 Si le but est de démarrer un ordinateur dessus, ne pas monter mais écrire l'image sur une clé
-  Balena Etcher le fait sans risque de se tromper de disque. L'opération efface entièrement la clé choisie.`
+  C'est le sujet de [[Installer Linux]]. Balena Etcher le fait sans risque de se tromper de disque. L'opération efface entièrement la clé choisie.`
 }
   ]
 },
@@ -1320,6 +1359,7 @@ Accepter que tout le disque sera effacé
   Cette version efface tout : Windows, les données, et la partition de restauration du constructeur. Pour garder Windows, c'est l'onglet À côté de Windows.
 ## Sauvegarder, avant tout le reste
 Copier tous les documents personnels sur un disque externe
+  La méthode complète, y compris pour les données rangées dans le navigateur : [[Sauvegarder ses apps et ses données]].
 Vérifier que la copie s'ouvre depuis une autre machine
   Une sauvegarde jamais relue n'est pas une sauvegarde.
 Exporter les marque-pages, les mots de passe et les clés de licence
@@ -1327,6 +1367,7 @@ Débrancher les autres disques si la machine en a plusieurs
   C'est la façon la plus sûre de ne pas se tromper de disque au moment de valider.
 ## Préparer la clé USB
 Télécharger l'image depuis le site officiel de la distribution, et de nulle part ailleurs
+  Le détail des vérifications et des pièges de format est dans [[Monter une image ISO]].
 Vérifier la somme de contrôle de l'image téléchargée
 \`\`\`
 sha256sum linuxmint.iso
@@ -1379,7 +1420,7 @@ Rien ne démarre après l'installation : vérifier l'ordre de démarrage dans l'
   id:"double", label:"À côté de Windows", time:"1 h 30",
   steps:`## Avant de toucher au disque
 Sauvegarder Windows entièrement sur un disque externe
-  Le double démarrage se passe bien dans l'immense majorité des cas. C'est pour les autres que la sauvegarde existe.
+  Le double démarrage se passe bien dans l'immense majorité des cas. C'est pour les autres que la sauvegarde existe. Voir [[Sauvegarder ses apps et ses données]].
 Vérifier qu'il reste au moins 50 Go de libre sur le disque
   En dessous de 40, l'installation tient mais devient vite étouffante. Fais le ménage dans Windows avant, pas après.
 Noter la clé de récupération BitLocker, ou suspendre le chiffrement
@@ -1400,6 +1441,7 @@ Vérifier qu'il ne reste pas quatre partitions primaires sur un vieux disque MBR
   Sur un disque en MBR, la cinquième partition est impossible. Les machines récentes sont en GPT et ne connaissent pas cette limite.
 ## Préparer la clé et démarrer dessus
 Télécharger l'image officielle et vérifier sa somme de contrôle
+  Les vérifications de format sont détaillées dans [[Monter une image ISO]].
 \`\`\`
 certutil -hashfile linuxmint.iso SHA256
 \`\`\`
@@ -1464,6 +1506,7 @@ Créer un disque virtuel de 40 Go, alloué dynamiquement
 Activer l'EFI dans les réglages système de la machine
   Cela reproduit le démarrage des machines d'aujourd'hui, et évite des surprises au moment de passer à une vraie installation.
 Attacher le fichier ISO au lecteur optique virtuel
+  Inutile de monter l'image ou de la graver : la machine virtuelle lit le .iso directement. Voir [[Monter une image ISO]] pour en explorer le contenu.
 ## Installer
 Démarrer la machine et choisir Essayer ou Installer
 Choisir la langue, le clavier et le fuseau
@@ -1811,12 +1854,45 @@ const $ = sel => document.querySelector(sel);
 function esc(s){
   return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
-/* Texte enrichi minimal : `code` et liens cliquables. */
+/* Texte enrichi minimal : `code`, liens web, et [[renvoi vers un autre tuto]]. */
 function rich(s){
   let out = esc(s);
   out = out.replace(/`([^`]+)`/g, (m, c) => "<code>" + c + "</code>");
   out = out.replace(/(https?:\/\/[^\s<)]+)/g, u => '<a href="' + u + '" target="_blank" rel="noopener">' + u + "</a>");
+  out = out.replace(/\[\[([^\]]+)\]\]/g, (m, ref) => tutoLinkHTML(ref.trim()));
   return out;
+}
+
+/* ---- Renvois entre tutos ----
+   [[…]] accepte l'identifiant ou le titre d'un tuto, accents et casse ignorés.
+   Le libellé affiché est toujours le vrai titre de la cible : renommer un tuto
+   met les renvois à jour tout seuls. */
+function normRef(s){
+  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ").trim();
+}
+function resolveRef(ref){
+  const all = allTutos();
+  const r = normRef(ref);
+  const partial = all.filter(t => normRef(t.title).includes(r));
+  return all.find(t => t.id === ref)
+      || all.find(t => normRef(t.title) === r)
+      || (partial.length === 1 ? partial[0] : null);
+}
+function refsIn(text){
+  const out = [];
+  String(text || "").replace(/\[\[([^\]]+)\]\]/g, (m, r) => { out.push(r.trim()); return m; });
+  return out;
+}
+function tutoLinkHTML(ref){
+  const t = resolveRef(ref);
+  if(!t){
+    return '<span class="tuto-link dead" title="Aucun tuto ne porte ce nom">' + esc(ref) + "</span>";
+  }
+  if(t.id === openId) return esc(t.title);          /* pas de renvoi vers soi-même */
+  const n = stepsOf(t, t.variants ? defaultVariant(t) : null).filter(i => i.type === "step").length;
+  return '<a class="tuto-link" href="#/t/' + encodeURIComponent(t.id) + '" title="Tuto · ' +
+         n + " étape" + (n > 1 ? "s" : "") + '">' + esc(t.title) + "</a>";
 }
 function gaugeHTML(doneCount, total, currentIndex){
   if(total === 0) return '<div class="gauge"></div>';
@@ -2055,7 +2131,33 @@ function renderTuto(id, vid){
       '<button class="btn" data-act="reset">Tout décocher pour recommencer</button></div>'
     : "";
 
+  renderLinks(t, s);
   renderActions(t, s);
+}
+
+/* Les renvois sortants se voient dans les étapes ; les entrants, non.
+   Ce bloc montre les deux sens. */
+function renderLinks(t, s){
+  const box = $("#tutoLinks");
+  const seen = new Set();
+  const out = [];
+  refsIn(sourceOf(t, s.vid)).forEach(r => {
+    const target = resolveRef(r);
+    if(target && target.id !== t.id && !seen.has(target.id)){ seen.add(target.id); out.push(target); }
+  });
+  const back = allTutos().filter(o => o.id !== t.id &&
+    refsIn(allSteps(o)).some(r => { const x = resolveRef(r); return x && x.id === t.id; }));
+
+  if(!out.length && !back.length){ box.hidden = true; box.innerHTML = ""; return; }
+  const chips = list => list.map(x =>
+    '<a class="link-chip" href="#/t/' + encodeURIComponent(x.id) + '">' + esc(x.title) + "</a>").join("");
+  box.innerHTML =
+    '<span class="eyebrow">Tutos liés</span>' +
+    (out.length ? '<div class="links-row"><span class="links-dir">Renvoie vers</span>' +
+      '<div class="links-chips">' + chips(out) + "</div></div>" : "") +
+    (back.length ? '<div class="links-row"><span class="links-dir">Cité par</span>' +
+      '<div class="links-chips">' + chips(back) + "</div></div>" : "");
+  box.hidden = false;
 }
 
 function renderActions(t, s){

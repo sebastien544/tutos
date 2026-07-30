@@ -40,6 +40,29 @@ git init
 
 Le texte entre `backticks` s'affiche en code, et les adresses web deviennent des liens.
 
+## Relier les tutos entre eux
+
+Quand une étape renvoie à un tuto qui existe déjà, `[[double crochet]]` en fait un lien :
+
+```
+Télécharger l'image officielle
+  Les vérifications sont détaillées dans [[Monter une image ISO]].
+```
+
+- Ce qui est entre crochets peut être **le titre ou l'identifiant** du tuto. Le titre est
+  comparé sans tenir compte des accents, de la casse ni des espaces en trop, et un titre
+  partiel suffit s'il ne désigne qu'un seul tuto.
+- Le texte affiché est **toujours le vrai titre de la cible**. Renommer un tuto met donc
+  tous les renvois à jour d'eux-mêmes.
+- Un renvoi qui ne correspond à rien s'affiche en gris souligné de pointillés, avec
+  « Aucun tuto ne porte ce nom » au survol. Rien ne casse, mais ça se voit.
+- Un tuto ne se renvoie pas à lui-même : le titre s'affiche alors en texte simple.
+
+En bas de chaque fiche, le bloc **Tutos liés** récapitule les deux sens : *Renvoie vers*
+(les liens présents dans les étapes affichées) et *Cité par* (les tutos qui pointent
+vers celui-ci). Le second sens est invisible autrement — c'est la raison d'être du bloc.
+Il disparaît quand il n'y a rien à montrer.
+
 ## Replier les phases
 
 L'en-tête de chaque phase est un bouton : un clic replie ou déplie ses étapes.
