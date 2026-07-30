@@ -1529,35 +1529,52 @@ Quand la décision est prise, passer à l'onglet Disque entier ou À côté de W
   ]
 },
 {
-  id:"b-cache", cat:"Entretien", time:"5 min",
+  id:"b-cache", cat:"Entretien", time:"10 min",
   title:"Vider le cache et supprimer les cookies",
-  desc:"Ce qu'on efface, ce qu'on perd, et comment viser un seul site plutôt que tout effacer. Chrome et dérivés, Firefox, Safari.",
+  desc:"Reconnaître le symptôme, essayer le moins cher d'abord, et savoir ce qu'on efface vraiment. Chrome et dérivés, Firefox, Safari.",
   variants:[
 {
-  id:"chrome", label:"Chrome", time:"5 min",
-  steps:`## Savoir ce qu'on efface
+  id:"chrome", label:"Chrome", time:"10 min",
+  steps:`## Reconnaître le symptôme
 Cette version vaut aussi pour Edge, Brave, Opera et Vivaldi
-  Ils partagent le même moteur : les mêmes raccourcis et les mêmes menus, à quelques mots près.
+  Mêmes raccourcis, mêmes menus à quelques mots près. Sous Edge, la section s'appelle Confidentialité, recherche et services.
+Décrire ce qui ne va pas avant de vider quoi que ce soit
+  Page qui affiche une vieille version, mise en page cassée : le cache. Boucle de connexion, déconnexion permanente : les cookies. Site lent pour tout le monde : ni l'un ni l'autre. Si c'est tout l'ordinateur qui traîne et pas seulement le navigateur, voir [[Dépanner un ordinateur qui rame]].
 Distinguer le cache des cookies
   Le cache est une copie des images et des fichiers des sites, gardée pour aller plus vite. Le vider ne fait rien perdre : les pages se rechargeront une fois plus lentement. Les cookies, eux, sont ce qui te garde connecté : les supprimer te déconnecte de tous les sites d'un coup.
+Retenir que « données de site » veut dire bien plus que cookies
+  C'est aussi le stockage local, là où les applications web gardent tout leur contenu : fiches, listes, brouillons, progression. Supprimer les données d'un site efface ce contenu, définitivement, sans demander autre chose qu'un clic.
 Vérifier que tu connais tes mots de passe avant de supprimer les cookies
-  C'est l'étape qu'on saute et qu'on regrette. Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
-Essayer d'abord le rechargement forcé, qui suffit dans la plupart des cas
-  Ctrl+Maj+R sur Windows et Linux, Cmd+Maj+R sur Mac. Ça recharge la page en ignorant le cache, sans rien effacer d'autre.
-## Viser un seul site, la bonne méthode
+  Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
+Retenir l'échelle, et s'arrêter au premier barreau qui marche
+  Rechargement forcé, fenêtre privée, extensions désactivées, un seul site, tout le cache, tous les cookies, réinitialisation. Chaque barreau coûte plus cher que le précédent : personne ne gagne à sauter directement au dernier.
+## Les trois essais qui évitent souvent tout le reste
+Recharger la page en forçant, sans rien effacer
+  Ctrl+Maj+R sur Windows et Linux, Cmd+Maj+R sur Mac. Ça ignore le cache pour cette page seulement.
+Ouvrir la même page dans une fenêtre de navigation privée
+  Ctrl+Maj+N. Si elle fonctionne là, le problème est dans ton cache, tes cookies ou une extension. Si elle ne fonctionne pas non plus, il est côté site : rien dans cette liste n'y changera quoi que ce soit.
+Désactiver les extensions le temps d'un essai
+  L'adresse \`chrome://extensions\`. Un bloqueur de publicité cassé produit exactement les symptômes qu'on attribue au cache. Réactive-les ensuite une par une pour trouver la coupable.
+S'arrêter là si l'un des trois essais a réglé le problème
+## Viser un seul site
+Vérifier d'abord si ce site garde des données qui t'appartiennent
+  Un site qui héberge tes fiches, tes listes ou ta progression range tout ça dans les données de site. Exporte-les avant d'effacer : [[Sauvegarder ses apps et ses données]].
 Cliquer sur l'icône à gauche de l'adresse du site
 Ouvrir Cookies et données de sites, puis Gérer les données du site
 Supprimer les données de ce site uniquement
   Tu restes connecté partout ailleurs. C'est ce qu'il faut faire quand un seul site déraille.
 Recharger la page et vérifier que le problème a disparu
 ## Tout vider, quand c'est vraiment nécessaire
+Exporter d'abord les données de toutes les applications web que tu utilises
+  Elles perdent tout d'un coup, chacune avec son propre bouton Exporter. Un fichier par app, rangé dans un dossier daté : [[Sauvegarder ses apps et ses données]].
 Ouvrir la fenêtre d'effacement
   Ctrl+Maj+Suppr sur Windows et Linux, Cmd+Maj+Suppr sur Mac. Ou l'adresse \`chrome://settings/clearBrowserData\`.
 Choisir la période Toutes les périodes
   La période par défaut est la dernière heure, ce qui ne règle presque jamais rien.
 Cocher Images et fichiers en cache
-Cocher Cookies et autres données de sites seulement si c'est nécessaire
-  C'est cette case-là qui déconnecte de tout. Le cache seul se vide sans conséquence.
+  Cette case seule est sans conséquence : c'est celle qu'on essaie en premier.
+Ne cocher Cookies et autres données de sites qu'en dernier recours
+  Elle déconnecte de tous les sites et efface le stockage local de tous les sites d'un coup. C'est le barreau le plus cher de l'échelle, et il n'y a pas de retour en arrière.
 Laisser les mots de passe et les données de formulaires décochés
   Rien n'oblige à les supprimer, et leur perte est définitive si rien ne les sauvegarde ailleurs.
 Lancer l'effacement, puis fermer et rouvrir le navigateur
@@ -1571,31 +1588,53 @@ Penser aux service workers pour une application web qui sert une vieille version
 Refaire l'opération sur le téléphone, qui a son propre cache
   Chrome mobile : les trois points, Historique, Effacer les données de navigation. Rien n'est partagé avec l'ordinateur de ce côté-là.
 ## Après
+Vérifier que le symptôme du départ a bien disparu
+  C'est la seule vérification qui compte : le reste n'était qu'un moyen.
 Se reconnecter aux sites importants et vérifier que rien ne manque
 Vérifier que les codes de double authentification arrivent bien
-  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
+  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».
+Si le problème persiste après tout ça, arrêter de vider
+  Ce n'était pas le cache. Cherche du côté du site lui-même, du réseau, ou d'un compte bloqué. Une deuxième passe ne donnera pas un résultat différent de la première.`
 },
 {
-  id:"firefox", label:"Firefox", time:"5 min",
-  steps:`## Savoir ce qu'on efface
+  id:"firefox", label:"Firefox", time:"10 min",
+  steps:`## Reconnaître le symptôme
+Décrire ce qui ne va pas avant de vider quoi que ce soit
+  Page qui affiche une vieille version, mise en page cassée : le cache. Boucle de connexion, déconnexion permanente : les cookies. Site lent pour tout le monde : ni l'un ni l'autre. Si c'est tout l'ordinateur qui traîne et pas seulement le navigateur, voir [[Dépanner un ordinateur qui rame]].
 Distinguer le cache des cookies
   Le cache est une copie des images et des fichiers des sites, gardée pour aller plus vite. Le vider ne fait rien perdre : les pages se rechargeront une fois plus lentement. Les cookies, eux, sont ce qui te garde connecté : les supprimer te déconnecte de tous les sites d'un coup.
+Retenir que « données de site » veut dire bien plus que cookies
+  C'est aussi le stockage local, là où les applications web gardent tout leur contenu : fiches, listes, brouillons, progression. Supprimer les données d'un site efface ce contenu, définitivement, sans demander autre chose qu'un clic.
 Vérifier que tu connais tes mots de passe avant de supprimer les cookies
-  C'est l'étape qu'on saute et qu'on regrette. Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
-Essayer d'abord le rechargement forcé, qui suffit dans la plupart des cas
-  Ctrl+Maj+R sur Windows et Linux, Cmd+Maj+R sur Mac. Ça recharge la page en ignorant le cache, sans rien effacer d'autre.
-## Viser un seul site, la bonne méthode
+  Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
+Retenir l'échelle, et s'arrêter au premier barreau qui marche
+  Rechargement forcé, fenêtre privée, extensions désactivées, un seul site, tout le cache, tous les cookies, réparation du profil. Chaque barreau coûte plus cher que le précédent.
+## Les trois essais qui évitent souvent tout le reste
+Recharger la page en forçant, sans rien effacer
+  Ctrl+Maj+R sur Windows et Linux, Cmd+Maj+R sur Mac.
+Ouvrir la même page dans une fenêtre de navigation privée
+  Ctrl+Maj+P. Si elle fonctionne là, le problème est dans ton cache, tes cookies ou une extension. Si elle ne fonctionne pas non plus, il est côté site : rien dans cette liste n'y changera quoi que ce soit.
+Désactiver les extensions le temps d'un essai
+  L'adresse \`about:addons\`. Un bloqueur de publicité cassé produit exactement les symptômes qu'on attribue au cache. Réactive-les ensuite une par une.
+S'arrêter là si l'un des trois essais a réglé le problème
+## Viser un seul site
+Vérifier d'abord si ce site garde des données qui t'appartiennent
+  Un site qui héberge tes fiches, tes listes ou ta progression range tout ça dans les données de site. Exporte-les avant d'effacer : [[Sauvegarder ses apps et ses données]].
 Cliquer sur le cadenas à gauche de l'adresse du site
 Choisir Effacer les cookies et les données de site
 Confirmer pour ce site uniquement
   Tu restes connecté partout ailleurs. C'est ce qu'il faut faire quand un seul site déraille.
 Recharger la page et vérifier que le problème a disparu
 ## Tout vider, quand c'est vraiment nécessaire
+Exporter d'abord les données de toutes les applications web que tu utilises
+  Elles perdent tout d'un coup, chacune avec son propre bouton Exporter. Un fichier par app, rangé dans un dossier daté : [[Sauvegarder ses apps et ses données]].
 Ouvrir la fenêtre Effacer les données récentes
   Ctrl+Maj+Suppr sur Windows et Linux, Cmd+Maj+Suppr sur Mac.
 Choisir l'intervalle Tout
-Cocher Cache, et ne cocher Cookies que si c'est nécessaire
-  C'est la case Cookies qui déconnecte de tout. Le cache seul se vide sans conséquence.
+Cocher Cache, et rien d'autre pour commencer
+  Cette case seule est sans conséquence : c'est celle qu'on essaie en premier.
+Ne cocher Cookies qu'en dernier recours
+  Elle déconnecte de tous les sites et efface le stockage local de tous les sites d'un coup. Il n'y a pas de retour en arrière.
 Laisser les identifiants et mots de passe enregistrés en dehors de l'opération
 Passer plutôt par Paramètres, Vie privée et sécurité pour un tri fin
   La section Cookies et données de sites propose Gérer les données, qui liste les sites un par un avec la place occupée. C'est là qu'on fait le ménage sans tout casser.
@@ -1611,31 +1650,51 @@ Penser aux service workers pour une application web qui sert une vieille version
 Refaire l'opération sur le téléphone, qui a son propre cache
   Firefox mobile : les trois points, Paramètres, Supprimer les données de navigation. Rien n'est partagé avec l'ordinateur de ce côté-là.
 ## Après
+Vérifier que le symptôme du départ a bien disparu
+  C'est la seule vérification qui compte : le reste n'était qu'un moyen.
 Se reconnecter aux sites importants et vérifier que rien ne manque
 Vérifier que les codes de double authentification arrivent bien
-  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
+  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».
+Si le problème persiste après tout ça, arrêter de vider
+  Ce n'était pas le cache. Cherche du côté du site lui-même, du réseau, ou d'un compte bloqué. Une deuxième passe ne donnera pas un résultat différent de la première.`
 },
 {
-  id:"safari", label:"Safari", time:"5 min",
-  steps:`## Savoir ce qu'on efface
+  id:"safari", label:"Safari", time:"10 min",
+  steps:`## Reconnaître le symptôme
+Décrire ce qui ne va pas avant de vider quoi que ce soit
+  Page qui affiche une vieille version, mise en page cassée : le cache. Boucle de connexion, déconnexion permanente : les cookies. Site lent pour tout le monde : ni l'un ni l'autre. Si c'est tout l'ordinateur qui traîne et pas seulement le navigateur, voir [[Dépanner un ordinateur qui rame]].
 Distinguer le cache des cookies
   Le cache est une copie des images et des fichiers des sites, gardée pour aller plus vite. Le vider ne fait rien perdre : les pages se rechargeront une fois plus lentement. Les cookies, eux, sont ce qui te garde connecté : les supprimer te déconnecte de tous les sites d'un coup.
+Retenir que « données de site » veut dire bien plus que cookies
+  C'est aussi le stockage local, là où les applications web gardent tout leur contenu : fiches, listes, brouillons, progression. Supprimer les données d'un site efface ce contenu, définitivement, sans demander autre chose qu'un clic.
 Vérifier que tu connais tes mots de passe avant de supprimer les cookies
-  C'est l'étape qu'on saute et qu'on regrette. Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
+  Après suppression, chaque site redemandera identifiant, mot de passe, et souvent un code de double authentification.
 Retenir que sur iPhone et iPad, Effacer efface partout à la fois
   Si Safari est synchronisé par iCloud, l'effacement se propage aux autres appareils du même compte. Ce n'est pas une opération locale.
-Essayer d'abord le rechargement forcé, qui suffit dans la plupart des cas
+Retenir l'échelle, et s'arrêter au premier barreau qui marche
+  Rechargement forcé, fenêtre privée, extensions désactivées, un seul site, le cache seul, toutes les données de sites. Chaque barreau coûte plus cher que le précédent.
+## Les trois essais qui évitent souvent tout le reste
+Recharger la page en forçant, sans rien effacer
   Cmd+Maj+R sur Mac. Sur iPhone et iPad, maintenir le bouton de rechargement dans la barre d'adresse.
+Ouvrir la même page dans une fenêtre de navigation privée
+  Cmd+Maj+N sur Mac, ou l'onglet Privé sur iPhone. Si elle fonctionne là, le problème est dans ton cache, tes cookies ou une extension. Si elle ne fonctionne pas non plus, il est côté site : rien dans cette liste n'y changera quoi que ce soit.
+Désactiver les extensions le temps d'un essai
+  Safari, Réglages, onglet Extensions. Sur iPhone : Réglages, Safari, Extensions. Un bloqueur de publicité cassé produit exactement les symptômes qu'on attribue au cache.
+S'arrêter là si l'un des trois essais a réglé le problème
 ## Sur Mac, viser un seul site
+Vérifier d'abord si ce site garde des données qui t'appartiennent
+  Un site qui héberge tes fiches, tes listes ou ta progression range tout ça dans les données de site. Exporte-les avant d'effacer : [[Sauvegarder ses apps et ses données]].
 Ouvrir Safari, Réglages, onglet Confidentialité
 Cliquer sur Gérer les données de sites web
 Chercher le site dans la liste et cliquer sur Supprimer
   Tu restes connecté partout ailleurs. C'est ce qu'il faut faire quand un seul site déraille.
 Recharger la page et vérifier que le problème a disparu
 ## Sur Mac, tout vider
+Exporter d'abord les données de toutes les applications web que tu utilises
+  Elles perdent tout d'un coup, chacune avec son propre bouton Exporter. Un fichier par app, rangé dans un dossier daté : [[Sauvegarder ses apps et ses données]].
 Vider le cache seul par le menu Développement
-  S'il n'apparaît pas : Safari, Réglages, Avancés, cocher Afficher les fonctionnalités pour les développeurs web. Ensuite Développement, Vider les caches. C'est la seule façon de vider le cache sans toucher aux cookies.
-Tout effacer par Historique, Effacer l'historique
+  S'il n'apparaît pas : Safari, Réglages, Avancés, cocher Afficher les fonctionnalités pour les développeurs web. Ensuite Développement, Vider les caches. C'est la seule façon de vider le cache sans toucher aux cookies ni au stockage local.
+Tout effacer par Historique, Effacer l'historique, en dernier recours
   Cette commande efface l'historique, les cookies et le cache d'un seul geste. Choisis la période Tout l'historique.
 Ou par Réglages, Confidentialité, Gérer les données de sites web, Tout supprimer
 Fermer puis rouvrir Safari
@@ -1649,9 +1708,13 @@ Passer par Avancé, Données de sites web pour supprimer site par site
 Vider aussi le cache hors ligne des apps qui affichent des pages web
   Beaucoup d'apps ouvrent les liens dans leur propre navigateur intégré, avec leur cache à elles. Ça se vide en désinstallant l'app, ou dans ses réglages internes.
 ## Après
+Vérifier que le symptôme du départ a bien disparu
+  C'est la seule vérification qui compte : le reste n'était qu'un moyen.
 Se reconnecter aux sites importants et vérifier que rien ne manque
 Vérifier que les codes de double authentification arrivent bien
-  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».`
+  Certains sites redemandent une validation complète après avoir perdu le cookie « appareil de confiance ».
+Si le problème persiste après tout ça, arrêter de vider
+  Ce n'était pas le cache. Cherche du côté du site lui-même, du réseau, ou d'un compte bloqué. Une deuxième passe ne donnera pas un résultat différent de la première.`
 }
   ]
 },
